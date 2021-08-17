@@ -1,0 +1,361 @@
+<mat-card style="min-height: 100%; min-width: 90%; overflow: auto">
+  <mat-card-title>
+    Inscription prestataire
+  </mat-card-title>
+  <mat-card-subtitle>
+    Merci de remplir tous les champs ci-dessous
+  </mat-card-subtitle>
+  <mat-card-content>
+    <mat-horizontal-stepper linear>
+        <mat-step label="Données personnelles">
+            <form novalidate [formGroup]="registerForm">
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nom</label>
+                        <input type="text" class="form-control" placeholder="Nom"
+                        formControlName="lastName"
+                        [ngClass]="{'is-invalid': registerForm.get('lastName')?.touched && !registerForm.get('lastName')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('lastName')?.errors?.required">
+                            Entrez votre nom
+                        </span>
+                    </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Prenom</label>
+                        <input type="text" class="form-control" placeholder="Prenom"
+                        formControlName="firstName"
+                         [ngClass]="{'is-invalid': registerForm.get('firstName')?.touched && !registerForm.get('firstName')?.valid}">
+                        <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('firstName')?.errors?.required">
+                            Entrez votre prenom
+                        </span>
+                    </div>
+                    </div>
+                </div>
+                <div class="form-row" formGroupName="emailGroup">
+                    <div class="col-md-6 mb-3">
+                        <label>E-Mail</label>
+                        <input type="email" class="form-control" placeholder="Email"
+                        formControlName="email"
+                        [ngClass]="{'is-invalid': registerForm.get('emailGroup')?.errors ||
+                        (registerForm.get('emailGroup.email')?.touched && !registerForm.get('emailGroup.email')?.valid)}"
+                        >
+                        <div class="invalid-feedback">
+                            <span *ngIf="registerForm.get('emailGroup.email')?.errors?.required">
+                                Entrez votre E-mail
+                            </span>
+                            <span *ngIf="registerForm.get('emailGroup.email')?.errors?.email">
+                                Votre E-mail est invalide
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-6">
+                        <label for="confirEmailId">Confirmer l'E-mail</label>
+                        <input type="email" class="form-contol" id="confirEmailId" placeholder="Confirmer l'email"
+                        formControlName="confirmEmail"
+                        [ngClass]="{'is-invalid': registerForm.get('emailGroup')?.errors || ((registerForm.get('emailGroup.confirmEmail')?.touched||registerForm.get('emailGroup.confirmEmail')?.dirty)
+                        && !registerForm.get('emailGroup.confirmEmail')?.valid)}">
+                            <div class="invalid-feedback">
+                                <span *ngIf="registerForm.get('emailGroup.confirmEmail')?.errors?.required">
+                                     Remplir
+                                </span>
+                                <span *ngIf="registerForm.get('emailGroup.confirmEmail')?.errors?.match">
+                                     Pas identique
+                                </span>
+                            </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" class="form-control" placeholder="Nom d'utilisateur"
+                    formControlName="login"
+                    [ngClass]="{'is-invalid': registerForm.get('login')?.touched && !registerForm.get('login')?.valid}">
+                <div class="invalid-feedback">
+                    <span *ngIf="registerForm.get('login')?.errors?.required">
+                        Entrez votre nom d'utilisateur
+                    </span>
+                    <span *ngIf="registerForm.get('login')?.errors?.minlength">
+                        Entrez votre nom d'utilisateur
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>Téléphone</label>
+                <input type="text" class="form-control" placeholder="Numéro de tel"
+                formControlName="phone"
+                [ngClass]="{'is-invalid': registerForm.get('phone')?.touched && !registerForm.get('phone')?.valid}">
+            <div class="invalid-feedback">
+                <span *ngIf="registerForm.get('phone')?.errors?.required">
+                    Entrez votre numéro de Téléphone
+                </span>
+                <span *ngIf="registerForm.get('phone')?.errors?.minlength || registerForm.get('phone')?.errors?.maxlength">
+                    Entrez un numéro de téléphone correct
+                </span>
+            </div>
+              <div class="col-md-6 mb-3">
+                <label>Adresse</label>
+                <input type="text" class="form-control" placeholder="Adresse"
+                       formControlName="adresse"
+                       [ngClass]="{'is-invalid': registerForm.get('adresse')?.touched && !registerForm.get('adresse')?.valid}">
+                <div class="invalid-feedback">
+                    <span *ngIf="registerForm.get('adresse')?.errors?.required">
+                        Entrez votre Adresse
+                    </span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label>Ville</label>
+                <input type="text" class="form-control" placeholder="Ville"
+                       formControlName="ville"
+                       [ngClass]="{'is-invalid': registerForm.get('ville')?.touched && !registerForm.get('ville')?.valid}">
+                <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('ville')?.errors?.required">
+                            Entrez votre Ville
+                        </span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label>Région</label>
+                <input type="text" class="form-control" placeholder="Région"
+                       formControlName="departement"
+                       [ngClass]="{'is-invalid': registerForm.get('departement')?.touched && !registerForm.get('departement')?.valid}">
+                <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('departement')?.errors?.required">
+                            Entrez votre Département
+                        </span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label>Code Postal</label>
+                <input type="text" class="form-control" placeholder="Code Postal"
+                       formControlName="postal"
+                       [ngClass]="{'is-invalid': registerForm.get('postal')?.touched && !registerForm.get('postal')?.valid}">
+                <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('postal')?.errors?.required">
+                            Entrez votre Code Postal
+                        </span>
+                </div>
+              </div>
+        </div>
+
+        <div class="form-row" formGroupName="birthdayGroup">
+            <div class="col-md-6 mb-3">
+                <label>Date de naissance</label>
+                    <input type="date" class="form-control" placeholder=""
+                    formControlName="birthday"
+                    [ngClass]="{'is-invalid': registerForm.get('birthdayGroup')?.errors||(registerForm.get('birthday')?.touched && !registerForm.get('birthday')?.valid)}">
+                <div class="invalid-feedback">
+                    <span *ngIf="registerForm.get('birthday')?.errors?.required">
+                        Entrez votre date de naissance
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Image</label>
+                <input type="text" class="form-control" placeholder="URL de l'image"
+                formControlName="image"
+                [ngClass]="{'is-invalid': registerForm.get('image')?.touched && !registerForm.get('image')?.valid}">
+            <div class="invalid-feedback">
+                <span *ngIf="registerForm.get('image')?.errors?.required">
+                    Entrez un url
+                </span>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label>Description</label>
+                <textarea cols="5" rows="5" class="form-control" placeholder="Description"
+                formControlName="description"
+                [ngClass]="{'is-invalid': registerForm.get('description')?.touched && !registerForm.get('description')?.valid}"></textarea>
+            <div class="invalid-feedback">
+                <span *ngIf="registerForm.get('description')?.errors?.required">
+                    Entrez une description
+                </span>
+            </div>
+        </div>
+        <div class="form-row" formGroupName="passwordGroup">
+            <div class="col-md-6 mb-3">
+                <label>Mot de passe</label>
+                <input type="password" class="form-control" placeholder="Mot de passe"
+                formControlName="password"
+                [ngClass]="{'is-invalid': registerForm.get('passwordGroup')?.errors ||
+                (registerForm.get('passwordGroup.password')?.touched && !registerForm.get('passwordGroup.password')?.valid)}"
+                >
+            <div class="invalid-feedback">
+                <span *ngIf="registerForm.get('passwordGroup.password')?.errors?.required">
+                    Entrez votre Mot de passe
+                </span>
+                <span *ngIf="registerForm.get('passwordGroup.password')?.errors?.minlenght">
+                    Choisir un mot de passe avec au minimum 8 caractères
+                </span>
+            </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="confirPasswordId">Confirmer le mot de passe</label>
+                <input type="password"  class="form-contol" id="confirPasswordId" placeholder="Confirmer le mot de passe"
+                formControlName="confirmPassword"
+                [ngClass]="{'is-invalid': registerForm.get('passwordGroup')?.errors || ((registerForm.get('passwordGroup.confirmPassword')?.touched||registerForm.get('passwordGroup.confirmPassword')?.dirty)
+                && !registerForm.get('passwordGroup.confirmPassword')?.valid)}">
+
+                <div class="invalid-feedback">
+                <span *ngIf="registerForm.get('passwordGroup.confirmPassword')?.errors?.required">
+                    Remplir
+                </span>
+                <span *ngIf="registerForm.get('passwordGroup.confirmPassword')?.errors?.match">
+                    Pas identique
+                </span>
+            </div>
+            </div>
+
+        </div>
+            </form>
+            <div>
+                <button mat-button matStepperNext>Suivant</button>
+            </div>
+        </mat-step>
+
+        <mat-step label="Diplome">
+            <form novalidate [formGroup]="registerForm">
+                <div class="col-md-6 mb-3">
+                    <label>Nom du fichier</label>
+                        <input type="text" class="form-control" placeholder="Nom de fichier"
+                        formControlName="filename"
+                        [ngClass]="{'is-invalid': registerForm.get('filename')?.touched && !registerForm.get('filename')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('filename')?.errors?.required">
+                            Entrez un nom de fichier
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="file">Choisir un fichier</label>
+                  <input type="file"
+                         id="file"
+                         accept="image/jpeg"
+                         (change)="handleFileInput($event)">
+                    <label>URL du fichier</label>
+                        <input type="text" class="form-control" placeholder="URL du fichier"
+                        formControlName="filePath"
+                        [ngClass]="{'is-invalid': registerForm.get('filePath')?.touched && !registerForm.get('filePath')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('filePath')?.errors?.required">
+                            Entrez un url
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <div>
+                <button mat-button matStepperPrevious>Retour</button>
+                <button mat-button matStepperNext>Suivant</button>
+            </div>
+        </mat-step>
+
+        <mat-step label="Expérience">
+            <form novalidate [formGroup]="registerForm">
+                <div class="col-md-6 mb-3">
+                    <label>Titre</label>
+                        <input type="text" class="form-control" placeholder="Titre"
+                        formControlName="title"
+                        [ngClass]="{'is-invalid': registerForm.get('title')?.touched && !registerForm.get('title')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('title')?.errors?.required">
+                            Entrez un titre
+                        </span>
+                    </div>
+                </div>
+                <div class="form-row" formGroupName="DateGroup">
+                    <div class="col-md-6 mb-3">
+                        <label>Date début</label>
+                        <input type="date" class="form-control" placeholder=""
+                        formControlName="startYear"
+                        [ngClass]="{'is-invalid': registerForm.get('DateGroup')?.errors ||
+                        (registerForm.get('DateGroup.startYear')?.touched && !registerForm.get('DateGroup.startYear')?.valid)}"
+                        >
+                        <div class="invalid-feedback">
+                            <span *ngIf="registerForm.get('DateGroup.startYear')?.errors?.required">
+                                Entrez une date de début
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-6">
+                        <label>Date de fin</label>
+                        <input type="date" class="form-contol" placeholder=""
+                        formControlName="endYear"
+                        [ngClass]="{'is-invalid': registerForm.get('DateGroup')?.errors || ((registerForm.get('DateGroup.endYear')?.touched||registerForm.get('emailGroup.confirmEmail')?.dirty)
+                        && !registerForm.get('DateGroup.endYear')?.valid)}">
+                            <div class="invalid-feedback">
+                                <span *ngIf="registerForm.get('DateGroup.endYear')?.errors?.required">
+                                    Entrez une date de fin
+                                </span>
+                            </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Description</label>
+                        <textarea cols="5" rows="5" class="form-control" placeholder="Description"
+                        formControlName="description2"
+                        [ngClass]="{'is-invalid': registerForm.get('description2')?.touched && !registerForm.get('description2')?.valid}"></textarea>
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('description2')?.errors?.required">
+                            Entrez une description
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <div>
+                <button mat-button matStepperPrevious>Retour</button>
+                <button mat-button matStepperNext>Suivant</button>
+            </div>
+        </mat-step>
+
+        <mat-step label="Forfait">
+            <form novalidate (ngSubmit) = "saveData($event)" [formGroup]="registerForm">
+                <div class="col-md-6 mb-3">
+                    <label>Heure de début de la prestation</label>
+                        <input type="number" class="form-control" placeholder=""
+                        formControlName="startHour"
+                        [ngClass]="{'is-invalid': registerForm.get('startHour')?.touched && !registerForm.get('startHour')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('startHour')?.errors?.required">
+                            Entrez une heure
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Heure de fin de la prestation</label>
+                        <input type="number" class="form-control" placeholder=""
+                        formControlName="endHour"
+                        [ngClass]="{'is-invalid': registerForm.get('endHour')?.touched && !registerForm.get('endHour')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('endHour')?.errors?.required">
+                            Entrez une heure
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Prix total de la prestation</label>
+                        <input type="number" class="form-control" placeholder="Prix"
+                        formControlName="price"
+                        [ngClass]="{'is-invalid': registerForm.get('price')?.touched && !registerForm.get('price')?.valid}">
+                    <div class="invalid-feedback">
+                        <span *ngIf="registerForm.get('price')?.errors?.required">
+                            Mettre un prix
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <div>
+                <button mat-button matStepperPrevious>Retour</button>
+            </div>
+            <button mat-flat-button color = "primary" type="submit"
+            (click)="saveData($event)" *ngIf="!isLoading">
+                Confirmer l'inscription
+            </button>
+          <mat-spinner *ngIf="isLoading"></mat-spinner>
+        </mat-step>
+
+    </mat-horizontal-stepper>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,62 @@
+
+<mat-card style="max-height: 100%; max-width: 90%">
+  <mat-card-title>{{title}}</mat-card-title>
+    <mat-card-content *ngIf="profileType === 'user'">
+      <mat-selection-list multiple = "false">
+        <button mat-icon-button>
+          <img [src]="image" style="width: 40px; height: 40px; border-radius: 100%"
+               (click)="openDialog('image de profil','image',image)">
+        </button>
+        <div mat-subheader>Prénom</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('prénom','firstName',user.firstName)">{{user.firstName}}</mat-list-option>
+        <div mat-subheader>Nom</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('nom','lastName',user.lastName)">{{user.lastName}}</mat-list-option>
+        <div mat-subheader>Mail</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('mail','mail',user.mail)">{{user.mail}}</mat-list-option>
+        <div mat-subheader>Pseudo</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('pseudo','login',user.login)">{{user.login}}</mat-list-option>
+        <div mat-subheader>Mot de passe</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('mot de passe','password',password)"></mat-list-option>
+        <div mat-subheader>Date de naissance</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('date de naissance','birthdate',user.birthdate)">{{user.birthdate}}</mat-list-option>
+        <div mat-subheader>Adresse</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('adresse','address',user.address)">{{user.address}}</mat-list-option>
+        <div mat-subheader>Code postal</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('code postal','zipcode',user.zipcode)">{{user.zipcode}}</mat-list-option>
+        <div mat-subheader>Ville</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('ville','city',user.city)">{{user.city}}</mat-list-option>
+        <div mat-subheader>Région :</div>
+        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                         (click)="openDialog('région','province',user.province)">{{user.province}}</mat-list-option>
+
+      </mat-selection-list>
+
+
+    </mat-card-content>
+  <mat-card-content *ngIf="profileType === 'provider'" >
+    <mat-form-field class="example-full-width" style="min-width : 30%">
+      <input type="text" placeholder="Recherchez un prestataire" aria-label="Select Users" matInput [formControl]="userControl">
+
+    </mat-form-field>
+
+    <mat-nav-list *ngFor="let provider of filteredProviders | async">
+      <hr>
+      <div mat-subheader (click)="showProviderProfile(provider.providerId)">{{provider.firstName}} {{provider.lastName}}<button mat-icon-button>
+        <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
+      </button></div>
+      <a mat-list-item (click)="showProviderProfile(provider.providerId)">
+        {{provider.mail}}
+      </a>
+      </mat-nav-list>
+  </mat-card-content>
+  </mat-card>
+

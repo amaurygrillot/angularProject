@@ -1,0 +1,24 @@
+<mat-card style="min-height : 800px; min-width: 1200px">
+  <mat-card-title>Vos prochaines prestations</mat-card-title>
+  <mat-card-content>
+    <mat-form-field class="example-full-width"
+                    style="min-width: 500px">
+      <input type="text" placeholder="Recherchez une réservation par n° de réservation ou par nom, prénom, mail d'utilisateur"
+             style="min-width: 500px"
+             aria-label="Select Users" matInput [formControl]="userControl">
+
+    </mat-form-field>
+
+    <mat-nav-list *ngFor="let booking of filteredBookings | async">
+    <hr>
+      <div mat-subheader>Réservation #{{booking.id}}</div>
+
+      <p>Date de la commande : {{booking.date}}</p>
+      <p>Commandée par : {{users.get(booking.userId).firstName}} {{users.get(booking.userId).lastName}}</p>
+      <p>Mail de l'utilisateur : {{users.get(booking.userId).mail}}</p>
+      <p>Date de départ : {{booking.createdAt}}</p>
+      <button mat-flat-button color="primary" (click)="changeAsked(booking)">Modifier la date</button>
+      <button mat-flat-button color="warn" (click)="deleteAsked(booking)">Supprimer le rendez-vous</button>
+    </mat-nav-list>
+  </mat-card-content>
+  </mat-card>

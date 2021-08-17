@@ -1,0 +1,44 @@
+<mat-card>
+  <mat-card-title>Mettre à jour le champ</mat-card-title>
+    <mat-card-content>
+      <div class="header">
+      </div>
+      <form (ngSubmit)="onUpdate()" name="updateForm" [formGroup]="updateForm">
+        <div class="emailInput">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Ancienne date</mat-label>
+            <input
+              formControlName="oldValue"
+              matInput
+              [type]="data"
+            />
+          </mat-form-field>
+        </div>
+
+        <div>
+              <mat-form-field class="mat-form-field" appearance="fill">
+                <mat-label>Choisissez une date</mat-label>
+                <input matInput [max]="today" [matDatepicker]="picker" formControlName="date"
+                [ngClass]="{'is-invalid': updateForm.get('date')?.touched && !updateForm.get('date')?.valid}">
+                <mat-datepicker-toggle matSuffix [for]="picker">
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <div class="invalid-feedback">
+                  <span *ngIf="isDate && updateForm.get('date')?.errors?.required">
+                     Mettre une date
+                  </span>
+              </div>
+              </mat-form-field>
+
+
+        </div>
+
+        <mat-spinner *ngIf="loading"></mat-spinner>
+        <button mat-flat-button color="primary" *ngIf="!loading">Mettre à jour</button>
+        <button mat-flat-button color="secondary" (click)="onNoClick($event)">Annuler</button>
+      </form>
+
+
+    </mat-card-content>
+  </mat-card>
+

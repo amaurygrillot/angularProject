@@ -1,0 +1,60 @@
+<div class="container mt-5">
+  <mat-tab-group color="primary" #tabGroup>
+    <mat-tab label="Accueil" #home>
+
+    </mat-tab>
+    <mat-tab label="Prendre rendez-vous" #appoint>
+      <app-booking *ngIf="appoint.isActive"></app-booking>
+    </mat-tab>
+    <mat-tab label="Contact" #contact></mat-tab>
+    <mat-tab label="Voir les prestataires" #allProviders>
+      <app-profile profileType = "provider" *ngIf="allProviders.isActive"></app-profile>
+    </mat-tab>
+    <mat-tab label="A propos" #about></mat-tab>
+    <mat-tab *ngIf="isLogged" [disabled]="true" #informations>
+      <ng-template mat-tab-label>
+        <button mat-button [matMenuTriggerFor]="menu" [ngClass]="{'mat-flat-button' : true}">
+          Mes informations
+          <mat-icon>keyboard_arrow_down</mat-icon>
+          <button mat-icon-button>
+          <img [src]="image" style="width: 40px; height: 40px; border-radius: 100%">
+          </button>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="showProfile()">Mon profil</button>
+          <button mat-menu-item *ngIf="isProvider"(click)="showProviderAppointment()">Mes prestations</button>
+          <button mat-menu-item (click)="showAppointment()">Mes rendez-vous</button>
+
+        </mat-menu>
+      </ng-template>
+      <app-profile *ngIf="showProf" profileType = "user"></app-profile>
+      <app-user-bookings *ngIf="showAppoint"></app-user-bookings>
+      <app-provider-bookings *ngIf="showProviderAppoint"></app-provider-bookings>
+    </mat-tab>
+    <mat-tab [disabled]="true">
+      <ng-template mat-tab-label>
+        <button mat-flat-button color = "primary" (click)="showLogin()" *ngIf="!isLogged" >
+          Connexion
+        </button>
+        <button mat-flat-button color = "warn" (click)="LogOff()" *ngIf="isLogged">
+          Déconnexion
+        </button>
+      </ng-template>
+
+    </mat-tab>
+    <mat-tab *ngIf="!isLogged" [disabled]="true" #inscription>
+      <ng-template mat-tab-label>
+        <button mat-button [matMenuTriggerFor]="menu" [ngClass]="{'mat-raised-button' : true}">
+          Inscription
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="showSubscribeUser()">Utilisateur</button>
+          <button mat-menu-item (click)="showSubscribeProvider()">Prestataire</button>
+        </mat-menu>
+      </ng-template>
+
+    </mat-tab>
+  </mat-tab-group>
+</div>

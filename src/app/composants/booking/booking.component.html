@@ -1,0 +1,100 @@
+<mat-card class = alert>
+    <mat-card-title>
+        Prise de rendez-vous
+    </mat-card-title>
+  <mat-card-subtitle>
+    Merci de remplir tous les champs ci-dessous
+  </mat-card-subtitle>
+
+    <mat-card-content>
+      <mat-horizontal-stepper linear #stepper>
+        <mat-step [editable]="notSubmitted" [stepControl]="bookingForm">
+        <form novalidate (ngSubmit) = "saveData($event)" [formGroup]="bookingForm">
+            <div class="form-row" >
+                <div class="col-md-6 mb-3" style="max-width : 30%">
+                  <mat-form-field class="mat-form-field" appearance="fill" style="min-width : 100%">
+                    <mat-label>Choisissez une date</mat-label>
+                    <input matInput [min]="today" [matDatepicker]="picker"  formControlName="picker"
+                           style="min-width : 100%"
+                    required #datePicker (dateChange)="showProviders()">
+                    <mat-datepicker-toggle matSuffix [for]="picker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                  <div class="invalid-feedback">
+                    <span *ngIf="bookingForm.get('picker')?.errors?.required">
+                        Champ vide
+                    </span>
+                    <span *ngIf="bookingForm.get('picker')?.errors?.valid">
+                        Date invalide
+                    </span>
+                  </div>
+
+                </div>
+              <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="showProvi">
+
+              <mat-form-field class="example-full-width" style="min-width : 100%">
+                <input type="text" placeholder="Sélectionnez un prestataire" style="min-width : 100%"
+                       aria-label="Select Users" matInput [matAutocomplete]="auto"
+                       [formControl]="userControl" formControlName="text" #text required>
+                <mat-hint>Entrez du texte pour chercher un prestataire</mat-hint>
+              </mat-form-field>
+
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let provider of filteredProviders | async" [value]="provider.firstName" (click)="optionClicked($event, provider.providerId)" required>
+                  <div (click)="optionClicked($event, provider.providerId)">
+                  </div>
+                  {{provider.firstName}} {{provider.lastName}}
+                  <button mat-icon-button>
+                    <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
+                  </button>
+                </mat-option>
+              </mat-autocomplete>
+              </div>
+
+              <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="showPricings">
+                <mat-form-field class="example-full-width" style="min-width : 100%" >
+                  <mat-select required formControlName="select" #select>
+                    <mat-option (click)="selectPricing($event, pricing)" *ngFor="let pricing of allPricings" [value]="pricing.id">De {{pricing.startHour}}h à {{pricing.endHour}}h ({{pricing.price / 100}}€)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+
+            <div class="text-right">
+                <button mat-flat-button [color]="!isInvalid?'primary':'warn'" type="submit" matStepperNext #confirmButton>
+                    Confirmer et passer au paiement
+                </button>
+            </div>
+        </form>
+          </mat-step>
+        <mat-step [stepControl]="stripeTest" [editable]="notSubmitted && !formFilled">
+
+          <form novalidate (ngSubmit)="makePayment($event)" [formGroup]="stripeTest">
+            <div class="form-row">
+              <div class="col-md-6 mb-3">
+                <mat-card-title>Procéder au paiement de {{price/100}}€</mat-card-title>
+            <ngx-stripe-card #card
+              [elementsOptions]="elementsOptions" #stripeCard
+            ></ngx-stripe-card>
+              </div>
+            </div>
+            <mat-spinner *ngIf="loading"></mat-spinner>
+            <button mat-flat-button color="primary" type="submit" *ngIf="!loading" matStepperNext>
+              Confirmer le paiement
+            </button>
+          </form>
+        </mat-step>
+        <mat-step>
+          <h1>Bravo, votre commande #{{bookingId}} a été enregistrée.</h1>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </mat-card-content>
+</mat-card>
+
+
+
+
+
+

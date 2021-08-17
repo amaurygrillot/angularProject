@@ -1,0 +1,49 @@
+<mat-card>
+  <mat-card-title>Connectez-vous</mat-card-title>
+    <mat-card-content>
+      <div class="header">
+      </div>
+      <form (ngSubmit)="onLogin()" name="loginForm" [formGroup]="loginForm">
+        <div class="emailInput">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Nom d'utilisateur</mat-label>
+            <input
+              formControlName="login"
+              matInput
+              placeholder="Nom d'utilisateur" required
+            />
+            <mat-error *ngIf="!loginForm.controls['login'].valid">
+                Mettre un nom d'utilisateur
+              </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <!--<span>
+            <a class="text-link" class="aLink" routerLink="/auth/forgot-password">Forgot Password?</a>
+          </span>
+          -->
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input formControlName="password" matInput [type]=" hide ? 'text' : 'password'" required />
+
+            <button  mat-icon-button matSuffix (click)="showPassword($event)" [attr.aria-label]="'Hide Password'"
+            [attr.aria-pressed]="hide">
+            <mat-icon>
+                {{hide ? 'visibility_off' : 'visibility'}}
+            </mat-icon>
+        </button>
+        <mat-error *ngIf="!loginForm.controls['password'].valid">
+            Mettre un mot de passe valide
+          </mat-error>
+        </mat-form-field>
+        </div>
+        <mat-spinner *ngIf="loading"></mat-spinner>
+        <button mat-flat-button color="primary" *ngIf="!loading">Connexion</button>
+        <button mat-flat-button color="secondary" (click)="onNoClick($event)">Annuler</button>
+      </form>
+
+
+    </mat-card-content>
+  </mat-card>
+
