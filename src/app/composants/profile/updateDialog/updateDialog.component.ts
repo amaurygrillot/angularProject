@@ -85,7 +85,6 @@ export class UpdateDialogComponent implements OnInit {
         },
 
       );
-      console.log('ojvfokevn');
     }
     else
     {

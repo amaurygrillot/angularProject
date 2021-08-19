@@ -1,6 +1,6 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {UserComponent} from './composants/user/user.component';
+import {SubscribeComponent} from './composants/subscribe/subscribe.component';
 import {LoginComponent} from './composants/login/login.component';
 import {MatTabGroup} from '@angular/material/tabs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
@@ -73,8 +73,12 @@ export class AppComponent {
   // tslint:disable-next-line:typedef
 
 
-  showSubscribeUser() {
-    const dialogRef = this.dialog.open(UserComponent, {
+  showSubscribeUser(): void {
+    const dialogRef = this.dialog.open(SubscribeComponent, {
+      data: {
+        providerSubscribe: false,
+        userSubscribe: true
+      },
       maxWidth: '100%',
       maxHeight: '100%',
       minHeight: '95%',
@@ -85,8 +89,12 @@ export class AppComponent {
     });
   }
 
-  showSubscribeProvider() {
+  showSubscribeProvider(): void {
     const dialogRef = this.dialog.open(ProviderComponent, {
+      data: {
+        providerSubscribe: true,
+        userSubscribe: false
+      },
       maxWidth : '800px',
       maxHeight : '900px'
     });
