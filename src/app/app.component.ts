@@ -90,13 +90,15 @@ export class AppComponent {
   }
 
   showSubscribeProvider(): void {
-    const dialogRef = this.dialog.open(ProviderComponent, {
+    const dialogRef = this.dialog.open(SubscribeComponent, {
       data: {
         providerSubscribe: true,
         userSubscribe: false
       },
-      maxWidth : '800px',
-      maxHeight : '900px'
+      maxWidth: '100%',
+      maxHeight: '80%',
+      minHeight: '70%',
+      minWidth: '50%',
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');

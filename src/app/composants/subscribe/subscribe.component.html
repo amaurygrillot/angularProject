@@ -12,7 +12,7 @@
 
 
           <mat-step [stepControl]="registerFormOne">
-            <form novalidate (ngSubmit) = "saveDataFirst()" [formGroup]="registerFormOne">
+            <form (ngSubmit) = "saveDataFirst()" [formGroup]="registerFormOne">
               <div class="form-row" *ngIf="!data.providerSubscribe">
                 <div class="col-md-6 mb-3">
                   <label>Adresse</label>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="col-md-6 mb-6">
                   <label>Confirmer l'e-Mail</label>
-                  <input type="email" class="form-control" placeholder="ocnfirmer l'e-mail"
+                  <input type="email" class="form-control" placeholder="confirmer l'e-mail"
                          formControlName="confirmEmail"
                          [ngClass]="{'is-invalid': registerFormOne.get('emailGroup')?.errors ||
                     (registerFormOne.get('emailGroup.confirmEmail')?.touched && !registerFormOne.get('emailGroup.confirmEmail')?.valid)}"
@@ -86,14 +86,14 @@
 
               </div>
               <div class="text-right">
-                <button mat-flat-button color="basic" matStepperNext (click)="saveDataFirst()" #confirmButton>
+                <button mat-flat-button color="basic" matStepperNext (click)="saveDataFirst()" [disabled]="registerFormOne.invalid"#confirmButton>
                   Suivant
                 </button>
               </div>
             </form>
       </mat-step>
       <mat-step>
-        <form novalidate (ngSubmit) = "saveData()" [formGroup]="registerFormTwo">
+        <form [formGroup]="registerFormTwo">
             <div class="col-md-6 mb-3">
                     <label>Téléphone</label>
                     <input type="text" class="form-control" formControlName = "phone"
@@ -104,10 +104,13 @@
 
             <div class="col-md-6 mb-3">
                 <label>Date de naissance</label>
-                    <input type="date" class="form-control" placeholder=""
-                    formControlName="birthday"
-                    [ngClass]="{'is-invalid': registerFormTwo.get('birthday')?.errors}"
-                    required>
+                    <input matInput [max]="maxDate" [matDatepicker]="picker"  formControlName="birthday"
+                           style="min-width : 100%"
+                           required #datePicker
+                           [ngClass]="{'is-invalid': registerFormTwo.get('birthday')?.errors}">
+                    <mat-datepicker-toggle matSuffix [for]="picker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
             </div>
             <div class="col-md-6 mb-3">
                 <label>Image</label>
@@ -143,6 +146,15 @@
                         formControlName="postal" required>
                 </div>
               <div class="col-md-6 mb-3" *ngIf="data.providerSubscribe">
+                <label>Description</label>
+                <textarea cols="5" rows="5" class="form-control" placeholder="Description"
+                          formControlName="description"
+                          [ngClass]="{'is-invalid': registerFormOne.get('description')?.touched && !registerFormTwo.get('description')?.valid}">
+                  Ecrivez quelque chose à propos de vous que les utilisateurs pourront voir...
+                </textarea>
+              </div>
+
+              <div class="col-md-6 mb-3" *ngIf="data.providerSubscribe">
                 <label>Distance maximale à laquelle vous souhaitez travailler</label>
                 <input type="number" min = "1" max = "150" step = "1" class="form-control" placeholder="entrez un nombre"
                        formControlName="maximum_range"
@@ -153,8 +165,10 @@
 
         </form>
         <div class="text-right">
-          <button mat-flat-button color = "primary" type="submit" (click)="saveData()"
-          *ngIf="!isLoading">
+          <button mat-flat-button color = "primary" type="submit"
+              *ngIf="!isLoading"
+              (click)="saveData()"
+              [disabled]="registerFormTwo.invalid">
             Confirmer l'inscription
           </button>
           <mat-spinner *ngIf="isLoading"></mat-spinner>
