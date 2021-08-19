@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit {
     }
     else {
       this.title = 'Voir les profils';
-      this.getAllProviders().then(async () => {
+      this.getAllVerifiedProviders().then(async () => {
         this.filteredProviders = this.userControl.valueChanges.pipe(
           startWith<string | User[]>(this.users),
           map(value => typeof value === 'string' ? value : this.lastFilter),
@@ -70,12 +70,12 @@ export class ProfileComponent implements OnInit {
     event.stopPropagation();
   }
 
-  async getAllProviders(): Promise<User[] | null>
+  async getAllVerifiedProviders(): Promise<User[] | null>
   {
     const headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
-    const data = await this.http.get<any>(' http://localhost:3000/provider/', { headers : headers1}).toPromise();
+    const data = await this.http.get<any>(' http://localhost:3000/provider/verified', { headers : headers1}).toPromise();
     for (const provider of data) {
       const user = await this.http.get<any>(`http://localhost:3000/user/${provider.userId}`, { headers : headers1}).toPromise();
       const result = await this.http.get(`http://localhost:3000/user/file/${user.image}`,
