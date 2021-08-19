@@ -6,6 +6,7 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ProviderComponent} from './composants/provider/provider.component';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {User} from './models/user';
 
 @Component({
   selector: 'app-root',
@@ -33,42 +34,42 @@ export class AppComponent {
     this.userRole = sessionStorage.getItem('userRole');
   }
 
-  showLogin() {
+  async showLogin(): Promise<User | null> {
     const dialogRef = this.dialog.open(LoginComponent, {
     });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+    dialogRef.afterClosed().subscribe(async result => {
       if (sessionStorage.getItem('token') !== null) {
         const headers1 = new HttpHeaders()
           .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
           .set('Content-Type', 'application/json');
         this.isLogged = true;
-        this.http.get(`http://localhost:3000/user/session/${sessionStorage.getItem('token')}`,  {headers: headers1})
-          .subscribe((session: any) => {
-            console.log(session);
-            this.http.get(`http://localhost:3000/user/${session.userId}`, {headers: headers1})
-              .subscribe((user: any) => {
-                sessionStorage.setItem('userRole', user.role);
-                if (user.role === 'provider')
+        const session = await this.http.get<any>(`http://localhost:3000/user/session/${sessionStorage.getItem('token')}`,
+          {headers: headers1})
+              .toPromise();
+        const user = await this.http.get<any>(`http://localhost:3000/user/${session.userId}`,
+              {headers: headers1})
+              .toPromise();
+        console.log(JSON.stringify(user));
+        sessionStorage.setItem('userRole', user.role);
+        if (user.role === 'provider')
                 {
                   this.isProvider = true;
                 }
-                this.http.get(`http://localhost:3000/user/file/${user.image}`, {headers: headers1, responseType: 'arraybuffer'})
-                  .subscribe( (result: any) => {
-                    let binary = '';
-                    const bytes = new Uint8Array( result );
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                      binary += String.fromCharCode( bytes[ i ] );
-                    }
-                    this.image = 'data:image/jpeg;base64,' + btoa(binary);
-                    sessionStorage.setItem('image', this.image);
-                  });
-              });
-          });
+        const arrayBufferImage = await this.http.get(`http://localhost:3000/user/file/${user.image}`,
+                  {headers: headers1, responseType: 'arraybuffer'}).toPromise();
+        let binary = '';
+        const bytes = new Uint8Array( arrayBufferImage );
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+                  binary += String.fromCharCode( bytes[ i ] );
+                }
+        const image = 'data:image/jpeg;base64,' + btoa(binary);
+        sessionStorage.setItem('image', image);
 
       }
+      return null;
     });
+    return null;
   }
   // tslint:disable-next-line:typedef
 
