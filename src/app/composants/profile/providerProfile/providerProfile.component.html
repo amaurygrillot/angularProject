@@ -27,8 +27,13 @@
         <div mat-subheader>Tarifs</div>
         <mat-list-item [style]="pricingHeight" [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
           <mat-list>
-          <mat-list-item *ngFor="let pricing of provider.pricing">
-            {{pricing.hourlyPrice}}
+          <mat-list-item *ngFor="let providerPricing of provider.pricing">
+            <mat-list-item>
+              {{findPricing(providerPricing.pricingId || "")?.name}}
+            </mat-list-item>
+            Tarif horaire : {{providerPricing.hourlyPrice}}
+            Durée minimum de la prestation : {{providerPricing.minimumTime}}
+            Durée maximum de la prestation : {{providerPricing.maximumTime}}
           </mat-list-item>
           </mat-list>
 
@@ -37,7 +42,7 @@
         <mat-list-item [style]="diplomaHeight" [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
           <mat-list>
             <mat-list-item *ngFor="let diploma of provider.diploma">
-              {{diploma.filePath}}
+              {{diploma.filename}}
             </mat-list-item>
             <button mat-flat-button color="primary" *ngIf="isAdmin" (click)="validateDiploma()">Valider les diplomes</button>
             <mat-list-item *ngIf="isVerified">

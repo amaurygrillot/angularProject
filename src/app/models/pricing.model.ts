@@ -1,29 +1,17 @@
 export interface IPricing {
-    id?: string;
-    providerId?: string;
-    date: string;
-    startHour: number;
-    endHour: number;
-    price: number;
-    hourlyPrice: number;
+  id?: string;
+  name?: string;
+  description?: string;
 }
 
 export class Pricing implements IPricing {
-    id?: string;
-    providerId?: string;
-    date: string;
-    startHour: number;
-    endHour: number;
-    price: number;
-    hourlyPrice: number;
+  id?: string;
+  name?: string;
+  description?: string;
 
-    constructor(id: string, providerId: string, date: string, startHour: number, endHour: number, price: number, hourlyPrice: number) {
-        this.id = id;
-        this.providerId = providerId;
-        this.date = date;
-        this.startHour = startHour;
-        this.endHour = endHour;
-        this.price = price;
-        this.hourlyPrice = hourlyPrice;
-    }
+  constructor(id: string, name: string, description: string) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+  }
 }

@@ -1,11 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, FormControl} from '@angular/forms';
-import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
-import {DonneesService} from '../../service/donnees.service';
 import { User } from '../../models/user';
-import { Directive, ElementRef } from '@angular/core';
-import { MatSelectModule } from '@angular/material/select';
-import {MatAutocomplete} from '@angular/material/autocomplete';
+import { ElementRef } from '@angular/core';
 import {EMPTY, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -14,7 +10,8 @@ import {MatStepper} from '@angular/material/stepper';
 import {StripeService, StripeCardComponent} from 'ngx-stripe';
 import {StripeCardElementOptions, StripeElementsOptions} from '@stripe/stripe-js';
 import {Pricing} from '../../models/pricing.model';
-import {empty} from 'rxjs/internal/Observer';
+import {ProviderPricing} from '../../models/providerPricing.model';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'app-booking',
@@ -24,18 +21,18 @@ import {empty} from 'rxjs/internal/Observer';
 export class BookingComponent implements OnInit {
   @ViewChild('card') card !: StripeCardComponent;
   @ViewChild('datePicker') datePicker!: ElementRef;
+  @ViewChild('select') select!: MatSelect;
   @ViewChild('stepper') stepper!: MatStepper;
   users: User[] = [];
   today = new Date();
   userControl = new FormControl();
   filteredProviders!: Observable<User[]>;
+  providerPricings: Map<string, any> = new Map<string, any>();
   lastFilter = '';
   bookingForm!: FormGroup;
-  showLog = true;
   isInvalid = false;
   cardCaptureReady = false;
   cardReady = false;
-  showPricings = false;
   formFilled =  false;
   price = 0;
   elements = this.stripeService.elements();
@@ -51,6 +48,8 @@ export class BookingComponent implements OnInit {
   showProvi = false;
   formattedDate!: string;
   loading = false;
+  public chosenHourlyPrice = 0;
+  public chosenProvider: any;
   constructor(private fb: FormBuilder, private http: HttpClient, public dialog: MatDialog, private stripeService: StripeService) {
 
   }
@@ -62,11 +61,13 @@ export class BookingComponent implements OnInit {
         text: new FormControl('', [Validators.required]),
       }
     );
+    this.initPricings();
     this.stripeTest = this.fb.group({
       stripeCard: ['', [Validators.required]]
     });
   }
   filter(filter: string): User[] {
+    console.log("here");
     this.lastFilter = filter;
     if (filter) {
       return this.users.filter(option => {
@@ -80,8 +81,8 @@ export class BookingComponent implements OnInit {
 
 
   async optionClicked(event: Event, providerId: string | undefined) {
+    console.log('providerId : ' + providerId);
     this.chosenProviderId = providerId;
-    console.log('id : ' + providerId);
     const headers1 = new HttpHeaders()
       .set('Authorization', 'my-auth-token')
       .set('Content-Type', 'application/json');
@@ -92,18 +93,13 @@ export class BookingComponent implements OnInit {
       event.preventDefault();
       return;
     }
-    this.allPricings = [] as Pricing[];
-    for (const pricing of provider.pricing) {
-      const newPricing = new Pricing(pricing.id, pricing.providerId,
-        pricing.date, pricing.startHour, pricing.endHour, pricing.price, pricing.hourlyPrice);
-      this.allPricings.push(newPricing);
-    }
-    this.showPricings = true;
+    this.chosenProvider = provider;
+    this.chosenHourlyPrice = this.providerPricings.get(providerId || '')?.hourlyPrice;
     event.preventDefault();
   }
   // tslint:disable-next-line:typedef
 
-  public saveData(submitEvent: Event){
+  public saveData(submitEvent: Event): void{
     if (sessionStorage.getItem('token') === null)
     {
       console.log('event ' + JSON.stringify(submitEvent));
@@ -111,29 +107,28 @@ export class BookingComponent implements OnInit {
       this.isInvalid = true;
       alert('Connectez vous pour pouvoir prendre un rendez-vous');
     }
-    this.price = this.chosenPricing?.price || 0;
+    this.price = this.chosenHourlyPrice ; // * time
   }
   async getAllProviders(): Promise<User[] | null>
   {
+    this.providerPricings.clear();
     this.filteredProviders = EMPTY;
     this.users = [] as User[];
     const headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
-    const data = await this.http.get<any>(' http://localhost:3000/provider/', { headers : headers1}).toPromise();
+    const data = await this.http.get<any>(`http://localhost:3000/provider/pricingId/${this.select.value}`,
+      { headers : headers1}).toPromise();
     for (const provider of data) {
-      console.log(JSON.stringify(provider));
-      console.log(`http://localhost:3000/booking/provider/${provider.providerId}/${this.formattedDate}`);
-      const bookings = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${this.formattedDate}`,
+      const bookings = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${encodeURIComponent(this.formattedDate)}`,
         { headers : headers1}).toPromise();
       if (bookings.length > 0)
       {
-        console.log("here");
         continue;
       }
       const user = await this.http.get<any>(`http://localhost:3000/user/${provider.userId}`, { headers : headers1}).toPromise();
-      // @ts-ignore
-      const result = await this.http.get<string>(`http://localhost:3000/user/file/${user.image}`, {headers: headers1, responseType: 'arraybuffer'}).toPromise();
+      const result = await this.http.get(`http://localhost:3000/user/file/${user.image}`,
+        {headers: headers1, responseType: 'arraybuffer'}).toPromise();
       let binary = '';
       const bytes = new Uint8Array( result );
       const len = bytes.byteLength;
@@ -142,16 +137,16 @@ export class BookingComponent implements OnInit {
       }
       const image = 'data:image/jpeg;base64,' + btoa(binary);
       this.users.push(new User(user.firstName, user.lastName, user.mail, user.login, image,
-        user.birthdate, user.address, user.zipcode, user.city, user.province,user.phoneNumber, provider.id));
+        user.birthdate, user.address, user.zipcode, user.city, user.province, user.phoneNumber, provider.id));
+      this.providerPricings.set(provider.id, provider.pricing);
     }
-    console.log(this.users.length);
     return null;
   }
 
 
    async makePayment(event: Event): Promise<null> {
     this.loading = true;
-    const body = {amount : `${this.chosenPricing?.price}`};
+    const body = {amount : `${this.price}`};
     const headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
@@ -169,7 +164,7 @@ export class BookingComponent implements OnInit {
     else {
       const bookingBody = {
         userId: sessionStorage.getItem('userId'),
-        providerId: this.chosenPricing?.providerId,
+        providerId: this.chosenProvider.id,
         date: this.formattedDate,
         pricingId: this.chosenPricing?.id
       };
@@ -191,11 +186,15 @@ export class BookingComponent implements OnInit {
 
   }
 
-  selectPricing(event: Event, pricing: Pricing | undefined) {
+  selectPricing(event: Event, pricing: Pricing | undefined): void {
       this.chosenPricing = pricing;
   }
 
-  showProviders() {
+  showProviders(): void {
+    if (!this.datePicker.nativeElement.value || !this.select.value)
+    {
+      return;
+    }
     const date = new Date(this.datePicker.nativeElement.value);
     const month = date.getUTCMonth() + 1;
     const day = date.getUTCDate() + 1;
@@ -209,5 +208,12 @@ export class BookingComponent implements OnInit {
       );
     });
 
+  }
+
+  private async initPricings() {
+    const pricings = await this.http.get<any>(`http://localhost:3000/pricing/`).toPromise();
+    for (const pricing of pricings){
+        this.allPricings.push(new Pricing(pricing.id, pricing.name, pricing.description));
+    }
   }
 }

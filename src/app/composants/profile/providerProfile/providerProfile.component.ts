@@ -9,6 +9,7 @@ import {DatePipe} from '@angular/common';
 import {Pricing} from '../../../models/pricing.model';
 import {Experience} from '../../../models/experience.model';
 import {Diploma} from '../../../models/diploma.model';
+import {ProviderPricing} from '../../../models/providerPricing.model';
 
 @Component({
   selector: 'app-profile-provider',
@@ -28,11 +29,12 @@ export class ProviderProfileComponent implements OnInit {
     description: '',
     diploma: [] as Diploma[],
     experience: [] as Experience[],
-    pricing: [] as Pricing[],
+    pricing: [] as ProviderPricing[],
   };
+  pricings = [] as Pricing[];
   toolTipMessage = 'Mettre le champ à jour';
   profileType!: string;
-  experienceHeight!:string;
+  experienceHeight!: string;
   pricingHeight!: string;
   diplomaHeight!: string;
   isAdmin = false;
@@ -47,7 +49,7 @@ export class ProviderProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUser();
-    if(sessionStorage.getItem('role') === 'admin')
+    if (sessionStorage.getItem('role') === 'admin')
     {
       this.isAdmin = true;
     }
@@ -68,14 +70,16 @@ export class ProviderProfileComponent implements OnInit {
         experience.startYear, experience.endYear, experience.title, experience.description);
       this.provider.experience.push(newExperience);
     }
-    for (const pricing of provider.pricing) {
-      const date = new Date(pricing.date);
-      const month = date.getUTCMonth() + 1;
-      const day = date.getUTCDate() + 1;
-      const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
-      const newPricing = new Pricing(pricing.id, pricing.providerId,
-        formattedDate, pricing.startHour, pricing.endHour, pricing.price, pricing.hourlyPrice);
-      this.provider.pricing.push(newPricing);
+    for (const providerPricing of provider.pricing) {
+      const newProviderPricing = new ProviderPricing(providerPricing.id, providerPricing.pricingId, providerPricing.providerId,
+        providerPricing.hourlyPrice, providerPricing.minimum_time, providerPricing.maximum_time);
+      this.provider.pricing.push(newProviderPricing);
+    }
+    const pricings = await this.http.get<any>(`http://localhost:3000/pricing/`,
+      { headers : this.headers1}).toPromise();
+    for (const pricing of pricings) {
+      const newPricing = new Pricing(pricing.id, pricing.name, pricing.description);
+      this.pricings.push(newPricing);
     }
     this.provider.userId = provider.userId;
     const user = await this.http.get<any>(`http://localhost:3000/user/${provider.userId}`, { headers : this.headers1}).toPromise();
@@ -92,19 +96,23 @@ export class ProviderProfileComponent implements OnInit {
         }
         this.image = 'data:image/jpeg;base64,' + btoa(binary);
       });
-    this.experienceHeight = "min-height: " + this.provider.experience.length * 40 + "px";
-    this.pricingHeight = "min-height: " + this.provider.pricing.length * 40 + "px";
-    this.diplomaHeight = "min-height: " + this.provider.diploma.length * 40 + "px";
+    this.experienceHeight = 'min-height: ' + this.provider.experience.length * 40 + 'px';
+    this.pricingHeight = 'min-height: ' + this.provider.pricing.length * 40 + 'px';
+    this.diplomaHeight = 'min-height: ' + this.provider.diploma.length * 40 + 'px';
   }
-  validateDiploma() {
+  validateDiploma(): void {
     this.headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
-    console.log("gere " + this.headers1.get('Authorization'));
     this.http.post(`http://localhost:3000/provider/verify/${this.injectedData.providerId}`, {},
       {headers: this.headers1})
       .subscribe( (result: any) => {
 
       });
+  }
+
+  public findPricing(id: string): Pricing | undefined
+  {
+    return this.pricings.find(pricing => pricing.id === id);
   }
 }

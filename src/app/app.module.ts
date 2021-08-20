@@ -9,16 +9,15 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { LoginComponent } from './composants/login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCardModule } from '@angular/material/card'
-import { MatButtonModule} from '@angular/material/button'
-import { MatInputModule } from '@angular/material/input'
-import { MatIconModule } from '@angular/material/icon'
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule} from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
 import {BookingComponent} from './composants/booking/booking.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule, MatOptionModule} from '@angular/material/core';
 import {HttpClientModule } from '@angular/common/http';
-import { ProviderComponent } from './composants/provider/provider.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu';
@@ -37,6 +36,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import {UpdateBookingComponent} from './composants/profile/providerBookings/updateBooking/updateBooking.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {GooglePlaceModule} from 'ngx-google-places-autocomplete';
+import {ProviderInformationsComponent} from './composants/providerInformations/providerInformations.component';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -55,7 +55,7 @@ export const MY_DATE_FORMATS = {
     SubscribeComponent,
     LoginComponent,
     BookingComponent,
-    ProviderComponent,
+    ProviderInformationsComponent,
     ProfileComponent,
     UpdateDialogComponent,
     ProviderProfileComponent,

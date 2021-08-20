@@ -4,7 +4,6 @@ import {SubscribeComponent} from './composants/subscribe/subscribe.component';
 import {LoginComponent} from './composants/login/login.component';
 import {MatTabGroup} from '@angular/material/tabs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ProviderComponent} from './composants/provider/provider.component';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {User} from './models/user';
 
@@ -16,6 +15,8 @@ import {User} from './models/user';
 export class AppComponent {
   imageName: any;
   title = 'NightNurse';
+  showProvInfo = false;
+  showPlanning = false;
   showLog = false;
   showSub = false;
   isLogged = sessionStorage.getItem('token') !== null;
@@ -106,7 +107,7 @@ export class AppComponent {
     });
   }
 
-  LogOff() {
+  LogOff(): void {
     this.isLogged = false;
     const token = sessionStorage.getItem('token');
     if (token !== null) {
@@ -123,13 +124,13 @@ export class AppComponent {
     }
   }
 
-  selectInformationTab()
+  selectInformationTab(): void
   {
     // @ts-ignore
     this.tabGroup?.selectedIndex = 5;
   }
 
-  hideInformationTab()
+  hideInformationTab(): void
   {
     this.showProf = false;
     this.showAppoint = false;
@@ -144,23 +145,47 @@ export class AppComponent {
     }
   }
 
-  showProfile() {
+  showProfile(): void {
     this.showProf = true;
+    this.showPlanning = false;
+    this.showAppoint = false;
+    this.showProviderAppoint = false;
+    this.showProvInfo = false;
+    this.selectInformationTab();
+  }
+
+  showProviderPlanning(): void {
+    this.showPlanning = true;
+    this.showProf = false;
+    this.showAppoint = false;
+    this.showProviderAppoint = false;
+    this.showProvInfo = false;
+    this.selectInformationTab();
+  }
+
+  showProviderInformations(): void {
+    this.showProvInfo = true;
+    this.showProf = false;
+    this.showPlanning = false;
     this.showAppoint = false;
     this.showProviderAppoint = false;
     this.selectInformationTab();
   }
 
-  showAppointment() {
-    this.showProf = false;
+  showAppointment(): void {
     this.showAppoint = true;
+    this.showProf = false;
+    this.showPlanning = false;
     this.showProviderAppoint = false;
+    this.showProvInfo = false;
     this.selectInformationTab();
   }
-  showProviderAppointment() {
-    this.showProf = false;
-    this.showAppoint = false;
+  showProviderAppointment(): void {
     this.showProviderAppoint = true;
+    this.showProf = false;
+    this.showPlanning = false;
+    this.showAppoint = false;
+    this.showProvInfo = false;
     this.selectInformationTab();
   }
 }

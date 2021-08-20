@@ -31,6 +31,18 @@
                   </div>
 
                 </div>
+
+              <div class="col-md-6 mb-3" style="max-width : 30%">
+                <mat-form-field class="example-full-width" style="min-width : 100%" >
+                  <mat-select required formControlName="select" #select>
+                    <mat-option (click)="showProviders()"
+                        *ngFor="let pricing of allPricings" [value]="pricing.id" [matTooltip]="pricing.description || ''">
+                      {{pricing.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
               <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="showProvi">
 
               <mat-form-field class="example-full-width" style="min-width : 100%">
@@ -48,16 +60,11 @@
                   <button mat-icon-button>
                     <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
                   </button>
+                  Temps minimum : {{providerPricings.get(provider.providerId || "")?.minimum_time}}
+                  Temps maximum : {{providerPricings.get(provider.providerId || "")?.maximum_time}}
+                  Prix horaire : {{providerPricings.get(provider.providerId || "")?.hourlyPrice}}
                 </mat-option>
               </mat-autocomplete>
-              </div>
-
-              <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="showPricings">
-                <mat-form-field class="example-full-width" style="min-width : 100%" >
-                  <mat-select required formControlName="select" #select>
-                    <mat-option (click)="selectPricing($event, pricing)" *ngFor="let pricing of allPricings" [value]="pricing.id">De {{pricing.startHour}}h à {{pricing.endHour}}h ({{pricing.price / 100}}€)</mat-option>
-                  </mat-select>
-                </mat-form-field>
               </div>
             </div>
 

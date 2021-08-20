@@ -1,0 +1,55 @@
+<mat-card>
+  <mat-card-title>Mes informations professionnelles</mat-card-title>
+  <mat-card-content>
+    <mat-selection-list multiple = "false">
+      <div mat-subheader>Ma description</div>
+      <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
+                       (click)="updateDescription()">{{provider.description}}</mat-list-option>
+      <div mat-subheader>Types de prestations proposées</div>
+      <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+        <mat-list>
+
+          <mat-list-item *ngFor="let providerPricing of provider.pricing">
+            <mat-list-item>
+              {{findPricing(providerPricing.pricingId || "")?.name}}
+            </mat-list-item>
+            {{providerPricing.hourlyPrice}}
+          </mat-list-item>
+        </mat-list>
+      </mat-list-item>
+
+        <div mat-subheader>Diplomes</div>
+        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+          <mat-list>
+            <mat-list-item *ngFor="let diploma of provider.diploma">
+              Diplome #{{diploma.id}}
+              <img [src]="diploma.fileImage">
+            </mat-list-item>
+          </mat-list>
+        </mat-list-item>
+
+        <div mat-subheader>Expérience</div>
+        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+          <mat-list>
+            <mat-list-item *ngFor="let experience of provider.experience">
+              {{experience.title}}
+              <br>
+              {{experience.description}}
+              <br>
+              {{experience.startYear}} {{experience.endYear}}
+              <br>
+
+            </mat-list-item>
+          </mat-list>
+
+        </mat-list-item>
+
+
+
+    </mat-selection-list>
+
+
+  </mat-card-content>
+
+</mat-card>
+
