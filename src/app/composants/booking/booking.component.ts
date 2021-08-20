@@ -12,6 +12,7 @@ import {StripeCardElementOptions, StripeElementsOptions} from '@stripe/stripe-js
 import {Pricing} from '../../models/pricing.model';
 import {ProviderPricing} from '../../models/providerPricing.model';
 import {MatSelect} from '@angular/material/select';
+import {NgxMaterialTimepicker24HoursFaceComponent} from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-booking',
@@ -44,6 +45,7 @@ export class BookingComponent implements OnInit {
   stripeTest!: FormGroup;
   allPricings = [] as Pricing[];
   chosenPricing!: Pricing | undefined;
+  chosenProviderPricing!: any;
   bookingId!: string;
   notSubmitted = true;
   showProvi = false;
@@ -61,6 +63,8 @@ export class BookingComponent implements OnInit {
         rangePicker: new FormControl('', [Validators.required]),
         select: new FormControl('', [Validators.required]),
         text: new FormControl('', [Validators.required]),
+        startHour: new FormControl('', [Validators.required]),
+        endHour: new FormControl('', [Validators.required])
       }
     );
     this.initPricings();
@@ -98,12 +102,12 @@ export class BookingComponent implements OnInit {
     }
     this.chosenProvider = provider;
     this.chosenHourlyPrice = this.providerPricings.get(providerId || '')[0]?.hourlyPrice;
+    this.chosenProviderPricing = this.providerPricings.get(providerId || '')[0];
     event.preventDefault();
   }
   // tslint:disable-next-line:typedef
 
   public saveData(submitEvent: Event): void{
-    console.log("kpjhjvvvbhj");
     if (sessionStorage.getItem('token') === null)
     {
       console.log('event ' + JSON.stringify(submitEvent));
@@ -111,10 +115,9 @@ export class BookingComponent implements OnInit {
       this.isInvalid = true;
       alert('Connectez vous pour pouvoir prendre un rendez-vous');
     }
-    this.price = this.chosenHourlyPrice ; // * time
+    this.price = this.chosenHourlyPrice * 100 ; // * time
     this.stepper.selected._completedOverride = true;
     this.stepper.next();
-    console.log("submitted");
   }
   async getAllProviders(): Promise<User[] | null>
   {
@@ -174,8 +177,10 @@ export class BookingComponent implements OnInit {
       const bookingBody = {
         userId: sessionStorage.getItem('userId'),
         providerId: this.chosenProvider.id,
-        date: this.formattedStartDate,
-        pricingId: this.chosenPricing?.id
+        startDate: this.formattedStartDate,
+        endDate : this.formattedEndDate,
+        pricingId: this.chosenProviderPricing?.id,
+        price: this.price
       };
       const booking = await this.http.post<any>(' http://localhost:3000/booking/', bookingBody, { headers : headers1}).toPromise();
       if (booking === null)
@@ -202,18 +207,22 @@ export class BookingComponent implements OnInit {
   showProviders(): void {
     if (!this.startDatePicker.nativeElement.value ||
         !this.endDatePicker.nativeElement.value ||
-        !this.select.value)
+        !this.select.value ||
+        !this.bookingForm.get('startHour')?.value ||
+        !this.bookingForm.get('endHour')?.value)
     {
       return;
     }
     const startDate = new Date(this.startDatePicker.nativeElement.value);
     const startMonth = startDate.getUTCMonth() + 1;
     const startDay = startDate.getUTCDate() + 1;
-    this.formattedStartDate = startDate.getUTCFullYear() + '-' + startMonth + '-' + startDay;
+    const startHour = this.bookingForm.get('startHour')?.value;
+    this.formattedStartDate = startDate.getUTCFullYear() + '-' + startMonth + '-' + startDay + ' ' + startHour;
     const endDate = new Date(this.startDatePicker.nativeElement.value);
     const endMonth = startDate.getUTCMonth() + 1;
     const endDay = startDate.getUTCDate() + 1;
-    this.formattedEndDate = endDate.getUTCFullYear() + '-' + endMonth + '-' + endDay;
+    const endHour = this.bookingForm.get('endHour')?.value;
+    this.formattedEndDate = endDate.getUTCFullYear() + '-' + endMonth + '-' + endDay + ' ' + endHour;
     this.showProvi = true;
     this.getAllProviders().then(async () => {
       this.filteredProviders = this.userControl.valueChanges.pipe(
@@ -230,5 +239,9 @@ export class BookingComponent implements OnInit {
     for (const pricing of pricings){
         this.allPricings.push(new Pricing(pricing.id, pricing.name, pricing.description));
     }
+  }
+
+  saveHour() {
+    console.log(this.bookingForm.get('startHour')?.value);
   }
 }
