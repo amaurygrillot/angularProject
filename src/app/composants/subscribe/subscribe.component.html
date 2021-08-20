@@ -13,19 +13,6 @@
 
           <mat-step [stepControl]="registerFormOne">
             <form (ngSubmit) = "saveDataFirst()" [formGroup]="registerFormOne">
-              <div class="form-row" *ngIf="!data.providerSubscribe">
-                <div class="col-md-6 mb-3">
-                  <label>Adresse</label>
-                  <div class="container">
-                    <input ngx-google-places-autocomplete (onAddressChange)="handleAddressChange($event)" />
-
-                    <p>Address: {{ userAddress }}</p>
-                    <p>Latitude: {{ userLatitude }}</p>
-                    <p>Longitude: {{ userLongitude }}</p>
-                  </div>
-                </div>
-              </div>
-
               <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label>Nom</label>
@@ -102,6 +89,16 @@
                            required>
             </div>
 
+          <div class="form-row">
+            <div class="col-md-6 mb-3">
+              <label>Adresse</label>
+              <div class="container">
+                <input ngx-google-places-autocomplete
+                       (onAddressChange)="handleAddressChange($event)" formControlName="adresse" required/>
+              </div>
+            </div>
+          </div>
+
             <div class="col-md-6 mb-3">
                 <label>Date de naissance</label>
                     <input matInput [max]="maxDate" [matDatepicker]="picker"  formControlName="birthday"
@@ -119,32 +116,7 @@
                     formControlName="image">
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label>Adresse</label>
-                    <input type="text" class="form-control" placeholder="Adresse"
-                        formControlName="adresse"
-                        [ngClass]="{'is-invalid': registerFormTwo.get('adresse')?.errors}"
-                        required>
-            </div>
-
             <div clas="form-row">
-                <div class="col-md-6 mb-3">
-                    <label>Ville</label>
-                        <input type="text" class="form-control" placeholder="Ville"
-                          formControlName="ville"
-                          [ngClass]="{'is-invalid': registerFormTwo.get('ville')?.errors}"
-                          required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>Département</label>
-                        <input type="text" class="form-control" placeholder="Région"
-                        formControlName="departement" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>Code Postal</label>
-                        <input type="text" class="form-control" placeholder="Code Postal"
-                        formControlName="postal" required>
-                </div>
               <div class="col-md-6 mb-3" *ngIf="data.providerSubscribe">
                 <label>Description</label>
                 <textarea cols="5" rows="5" class="form-control" placeholder="Description"

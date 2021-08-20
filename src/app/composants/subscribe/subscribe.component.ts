@@ -1,6 +1,6 @@
 /// <reference types="@types/google.maps" />
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, Form, FormControl} from '@angular/forms';
+import {FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, Form, FormControl, ValidationErrors} from '@angular/forms';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 import {DonneesService} from '../../service/donnees.service';
 import { Directive, ElementRef } from '@angular/core';
@@ -26,6 +26,10 @@ public registerFormTwo: FormGroup;
     password: '',
     image: '',
     birthday: '',
+    address: '',
+    city: '',
+    province: '',
+    postalCode: ''
   };
 private token = '';
   show = true;
@@ -33,6 +37,7 @@ private token = '';
   userAddress = '';
   userLatitude = '';
   userLongitude = '';
+  postalCode: any;
   maxDate = new Date();
 
   constructor(private http: HttpClient, private fb: FormBuilder,
@@ -59,10 +64,7 @@ private token = '';
       phone: new FormControl(),
       birthday:  new FormControl(),
       image: new FormControl(),
-      adresse: new FormControl(),
-      ville: new FormControl(),
-      departement: new FormControl(),
-      postal: new FormControl(),
+      adresse: new FormControl('', [this.checkAddress]),
       maximum_range: new FormControl(),
       description: new FormControl()
   });
@@ -73,9 +75,14 @@ private token = '';
   }
 
   public handleAddressChange(address: any): void {
-    this.userAddress = address.formatted_address;
-    this.userLatitude = address.geometry.location.lat();
-    this.userLongitude = address.geometry.location.lng();
+    console.log(address);
+    this.user.address = address.name;
+    this.user.city = address.address_components[2].long_name;
+    this.user.province = address.address_components[4].long_name;
+    this.user.postalCode = address.address_components[6].long_name;
+    this.registerFormTwo.get('adresse')?.setValue(address.name);
+    // this.userLatitude = address.geometry.location.lat();
+    // this.userLongitude = address.geometry.location.lng();
   }
 
   public saveDataFirst(): void{
@@ -94,8 +101,7 @@ private token = '';
     const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
     const newUser = new User(this.user.firstName, this.user.lastName, this.user.mail, this.user.login,
       `${this.registerFormTwo.get('image')?.value}`, formattedDate,
-      `${this.registerFormTwo.get('adresse')?.value}`, `${this.registerFormTwo.get('postal')?.value}`,
-      `${this.registerFormTwo.get('ville')?.value}`, `${this.registerFormTwo.get('departement')?.value}`,
+      this.user.address, this.user.postalCode, this.user.city, this.user.province,
       `${this.registerFormTwo.get('phone')?.value}`);
     const values = Object.assign({}, JSON.parse(JSON.stringify(newUser)), {password: `${this.user.password}`});
     console.log('valeurs: ', JSON.stringify(this.registerFormTwo.value));
@@ -119,8 +125,7 @@ private token = '';
     const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
     const newUser = new User(this.user.firstName, this.user.lastName, this.user.mail, this.user.login,
       `${this.registerFormTwo.get('image')?.value}`, formattedDate,
-      `${this.registerFormTwo.get('adresse')?.value}`, `${this.registerFormTwo.get('postal')?.value}`,
-      `${this.registerFormTwo.get('ville')?.value}`, `${this.registerFormTwo.get('departement')?.value}`,
+      this.user.address, this.user.postalCode, this.user.city, this.user.province,
       `${this.registerFormTwo.get('phone')?.value}`);
     const values = Object.assign({}, JSON.parse(JSON.stringify(newUser)),
       {
@@ -141,6 +146,7 @@ private token = '';
   }
 
   // tslint:disable-next-line:typedef
+
   showLogin() {
     this.show = false;
   }
@@ -179,7 +185,6 @@ private token = '';
 }
 
   saveData(): void {
-    console.log("here");
     if (this.data.providerSubscribe)
     {
       this.saveProviderData();
@@ -188,6 +193,13 @@ private token = '';
     {
       this.saveUserData();
     }
+  }
+
+  public checkAddress(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return this.registerFormTwo.get('adresse')?.value === this.user.address ?
+        {address: this.registerFormTwo.get('adresse')?.value} : null;
+    };
   }
 }
 
