@@ -12,24 +12,24 @@
         <form novalidate (ngSubmit) = "saveData($event)" [formGroup]="bookingForm">
             <div class="form-row" >
                 <div class="col-md-6 mb-3" style="max-width : 30%">
-                  <mat-form-field class="mat-form-field" appearance="fill" style="min-width : 100%">
-                    <mat-label>Choisissez une date</mat-label>
-                    <input matInput [min]="today" [matDatepicker]="picker"  formControlName="picker"
-                           style="min-width : 100%"
-                    required #datePicker (dateChange)="showProviders()">
-                    <mat-datepicker-toggle matSuffix [for]="picker">
-                    </mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                  </mat-form-field>
-                  <div class="invalid-feedback">
-                    <span *ngIf="bookingForm.get('picker')?.errors?.required">
-                        Champ vide
-                    </span>
-                    <span *ngIf="bookingForm.get('picker')?.errors?.valid">
-                        Date invalide
-                    </span>
-                  </div>
 
+                  <mat-form-field appearance="fill" class="example-form-field">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input  [rangePicker]="rangePicker">
+                      <input (dateChange)="showProviders()" #startDatePicker matStartDate placeholder="Start date" required>
+                      <input (dateChange)="showProviders()" #endDatePicker matEndDate placeholder="End date" required>
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #rangePicker>
+                      <mat-date-range-picker-actions>
+                        <button mat-button matDateRangePickerCancel>Cancel</button>
+                        <button mat-raised-button color="primary" (click)="showProviders()" matDateRangePickerApply>Apply</button>
+                      </mat-date-range-picker-actions>
+                    </mat-date-range-picker>
+                  </mat-form-field>
+
+                    <input placeholder="24hr format" aria-label="24hr format" [ngxTimepicker]="fullTime" [format]="24"  readonly>
+                    <ngx-material-timepicker #fullTime></ngx-material-timepicker>
                 </div>
 
               <div class="col-md-6 mb-3" style="max-width : 30%">
@@ -48,7 +48,7 @@
               <mat-form-field class="example-full-width" style="min-width : 100%">
                 <input type="text" placeholder="Sélectionnez un prestataire" style="min-width : 100%"
                        aria-label="Select Users" matInput [matAutocomplete]="auto"
-                       [formControl]="userControl" formControlName="text" #text required>
+                       [formControl]="userControl" formControlName="text" #text>
                 <mat-hint>Entrez du texte pour chercher un prestataire</mat-hint>
               </mat-form-field>
 
@@ -60,9 +60,9 @@
                   <button mat-icon-button>
                     <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
                   </button>
-                  Temps minimum : {{providerPricings.get(provider.providerId || "")?.minimum_time}}
-                  Temps maximum : {{providerPricings.get(provider.providerId || "")?.maximum_time}}
-                  Prix horaire : {{providerPricings.get(provider.providerId || "")?.hourlyPrice}}
+                  Temps minimum : {{providerPricings.get(provider.providerId || "")[0]?.minimum_time}}mn
+                  Temps maximum : {{providerPricings.get(provider.providerId || "")[0]?.maximum_time}}mn
+                  Prix horaire : {{providerPricings.get(provider.providerId || "")[0]?.hourlyPrice}}€
                 </mat-option>
               </mat-autocomplete>
               </div>

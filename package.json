@@ -29,6 +29,7 @@
     "file-saver": "^2.0.5",
     "ionic-angular": "^3.9.10",
     "ngx-google-places-autocomplete": "^2.0.5",
+    "ngx-material-timepicker": "^5.5.3",
     "ngx-stripe": "^8.2.0",
     "rxjs": "~6.6.0",
     "stripe-angular": "^1.7.0",

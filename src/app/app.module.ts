@@ -37,7 +37,7 @@ import {UpdateBookingComponent} from './composants/profile/providerBookings/upda
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {GooglePlaceModule} from 'ngx-google-places-autocomplete';
 import {ProviderInformationsComponent} from './composants/providerInformations/providerInformations.component';
-
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'MM/DD/YYYY',
@@ -89,7 +89,8 @@ export const MY_DATE_FORMATS = {
     MatListModule,
     MatTooltipModule,
     MatCheckboxModule,
-    GooglePlaceModule
+    GooglePlaceModule,
+    NgxMaterialTimepickerModule.setLocale('fr'),
   ],
   providers: [
     {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS}

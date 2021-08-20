@@ -20,7 +20,8 @@ import {MatSelect} from '@angular/material/select';
 })
 export class BookingComponent implements OnInit {
   @ViewChild('card') card !: StripeCardComponent;
-  @ViewChild('datePicker') datePicker!: ElementRef;
+  @ViewChild('startDatePicker') startDatePicker!: ElementRef;
+  @ViewChild('endDatePicker') endDatePicker!: ElementRef;
   @ViewChild('select') select!: MatSelect;
   @ViewChild('stepper') stepper!: MatStepper;
   users: User[] = [];
@@ -46,7 +47,8 @@ export class BookingComponent implements OnInit {
   bookingId!: string;
   notSubmitted = true;
   showProvi = false;
-  formattedDate!: string;
+  formattedStartDate!: string;
+  formattedEndDate!: string;
   loading = false;
   public chosenHourlyPrice = 0;
   public chosenProvider: any;
@@ -56,7 +58,7 @@ export class BookingComponent implements OnInit {
   ngOnInit(): void {
     this.bookingForm = new FormGroup(
       {
-        picker: new FormControl('', [Validators.required]),
+        rangePicker: new FormControl('', [Validators.required]),
         select: new FormControl('', [Validators.required]),
         text: new FormControl('', [Validators.required]),
       }
@@ -82,6 +84,7 @@ export class BookingComponent implements OnInit {
 
   async optionClicked(event: Event, providerId: string | undefined) {
     console.log('providerId : ' + providerId);
+    console.log('value : ' + this.bookingForm.get('text')?.value);
     this.chosenProviderId = providerId;
     const headers1 = new HttpHeaders()
       .set('Authorization', 'my-auth-token')
@@ -94,12 +97,13 @@ export class BookingComponent implements OnInit {
       return;
     }
     this.chosenProvider = provider;
-    this.chosenHourlyPrice = this.providerPricings.get(providerId || '')?.hourlyPrice;
+    this.chosenHourlyPrice = this.providerPricings.get(providerId || '')[0]?.hourlyPrice;
     event.preventDefault();
   }
   // tslint:disable-next-line:typedef
 
   public saveData(submitEvent: Event): void{
+    console.log("kpjhjvvvbhj");
     if (sessionStorage.getItem('token') === null)
     {
       console.log('event ' + JSON.stringify(submitEvent));
@@ -108,6 +112,9 @@ export class BookingComponent implements OnInit {
       alert('Connectez vous pour pouvoir prendre un rendez-vous');
     }
     this.price = this.chosenHourlyPrice ; // * time
+    this.stepper.selected._completedOverride = true;
+    this.stepper.next();
+    console.log("submitted");
   }
   async getAllProviders(): Promise<User[] | null>
   {
@@ -120,9 +127,11 @@ export class BookingComponent implements OnInit {
     const data = await this.http.get<any>(`http://localhost:3000/provider/pricingId/${this.select.value}`,
       { headers : headers1}).toPromise();
     for (const provider of data) {
-      const bookings = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${encodeURIComponent(this.formattedDate)}`,
+      const bookings1 = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${encodeURIComponent(this.formattedStartDate)}`,
         { headers : headers1}).toPromise();
-      if (bookings.length > 0)
+      const bookings2 = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${encodeURIComponent(this.formattedEndDate)}`,
+        { headers : headers1}).toPromise();
+      if (bookings1.length > 0 || bookings2.length > 0)
       {
         continue;
       }
@@ -165,7 +174,7 @@ export class BookingComponent implements OnInit {
       const bookingBody = {
         userId: sessionStorage.getItem('userId'),
         providerId: this.chosenProvider.id,
-        date: this.formattedDate,
+        date: this.formattedStartDate,
         pricingId: this.chosenPricing?.id
       };
       const booking = await this.http.post<any>(' http://localhost:3000/booking/', bookingBody, { headers : headers1}).toPromise();
@@ -191,14 +200,20 @@ export class BookingComponent implements OnInit {
   }
 
   showProviders(): void {
-    if (!this.datePicker.nativeElement.value || !this.select.value)
+    if (!this.startDatePicker.nativeElement.value ||
+        !this.endDatePicker.nativeElement.value ||
+        !this.select.value)
     {
       return;
     }
-    const date = new Date(this.datePicker.nativeElement.value);
-    const month = date.getUTCMonth() + 1;
-    const day = date.getUTCDate() + 1;
-    this.formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
+    const startDate = new Date(this.startDatePicker.nativeElement.value);
+    const startMonth = startDate.getUTCMonth() + 1;
+    const startDay = startDate.getUTCDate() + 1;
+    this.formattedStartDate = startDate.getUTCFullYear() + '-' + startMonth + '-' + startDay;
+    const endDate = new Date(this.startDatePicker.nativeElement.value);
+    const endMonth = startDate.getUTCMonth() + 1;
+    const endDay = startDate.getUTCDate() + 1;
+    this.formattedEndDate = endDate.getUTCFullYear() + '-' + endMonth + '-' + endDay;
     this.showProvi = true;
     this.getAllProviders().then(async () => {
       this.filteredProviders = this.userControl.valueChanges.pipe(
