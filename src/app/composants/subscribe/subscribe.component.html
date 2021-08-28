@@ -94,7 +94,8 @@
               <label>Adresse</label>
               <div class="container">
                 <input ngx-google-places-autocomplete
-                       (onAddressChange)="handleAddressChange($event)" formControlName="adresse" required/>
+                       (onAddressChange)="handleAddressChange($event)"
+                       formControlName="adresse" id = "adresse" #adresse required/>
               </div>
             </div>
           </div>

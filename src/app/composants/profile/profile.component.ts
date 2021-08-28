@@ -23,7 +23,7 @@ export class ProfileComponent implements OnInit {
   @Input() providerId!: string;
   users: User[] = [];
   user: User = new User('', '', '', '', ''
-    , '', '', '', '', '', '');
+    , '', '', '', '', '', '', '');
   toolTipMessage = 'Mettre le champ à jour';
   title!: string;
   filteredProviders!: Observable<User[]>;
@@ -66,7 +66,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  optionClicked(event: Event, user: User) {
+  optionClicked(event: Event, user: User): void {
     event.stopPropagation();
   }
 
@@ -105,7 +105,7 @@ export class ProfileComponent implements OnInit {
         this.http.get(`http://localhost:3000/user/${session.userId}`, { headers : headers1})
           .subscribe(async (data: any) => {
             this.user = new User(data.firstName, data.lastName, data.mail, data.login, data.image,
-              data.birthdate, data.address, data.zipcode, data.city, data.province, data.phoneNumber);
+              data.birthdate, data.address, data.zipcode, data.city, data.province, data.phoneNumber, data.place_id);
             this.user.firstName = data.firstName;
             this.user.lastName = data.lastName;
             this.user.mail = data.mail;
@@ -117,14 +117,14 @@ export class ProfileComponent implements OnInit {
     return null;
   }
 
-  openDialog(fieldName: string, dbFieldName: string, fieldValue: string | null) {
+  openDialog(fieldName: string, dbFieldName: string, fieldValue: string | null): void {
     const values = {fieldName : `${fieldName}`,
       dbFieldName : `${dbFieldName}`,
       fieldValue : `${fieldValue}`};
     const dialogRef = this.dialog.open(UpdateDialogComponent, {data : values});
     dialogRef.afterClosed().subscribe(result => {
       this.user = new User(result.firstName, result.lastName, result.mail, result.login, result.image,
-        result.birthdate, result.address, result.zipcode, result.city, result.province, result.phoneNumber);
+        result.birthdate, result.address, result.zipcode, result.city, result.province, result.phoneNumber, result.place_id);
       // tslint:disable-next-line:no-eval
       eval(`this.user.${result.fieldName} = '${result.value}'`);
       console.log('The dialog was closed');
@@ -132,7 +132,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  showProviderProfile(providerId: string | undefined) {
+  showProviderProfile(providerId: string | undefined): void {
     const values = {providerId : `${providerId}`};
     const dialogRef = this.dialog.open(ProviderProfileComponent, {
       maxWidth: '100%',

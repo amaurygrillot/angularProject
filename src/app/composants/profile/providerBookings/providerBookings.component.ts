@@ -56,13 +56,14 @@ export class ProviderBookingsComponent implements OnInit {
     }
   }
 
-  optionClicked(event: Event, user: Booking) {
+  optionClicked(event: Event, user: Booking): void {
     event.stopPropagation();
   }
 
-  async getAllBookings()
+  async getAllBookings(): Promise<any>
   {
-    const data = await this.http.get<any>(`http://localhost:3000/booking/providerBookings/${sessionStorage.getItem('userId')}`, { headers : this.headers1}).toPromise();
+    const data = await this.http.get<any>(`http://localhost:3000/booking/providerBookings/${sessionStorage.getItem('userId')}`
+      , { headers : this.headers1}).toPromise();
     for (const booking of data) {
         this.bookings.push(new Booking(booking.id,
           booking.userId, booking.providerId, this.datePipe.transform(booking.date, 'MM/dd/yyyy') || '',
@@ -70,7 +71,7 @@ export class ProviderBookingsComponent implements OnInit {
           this.datePipe.transform(booking.createdAt, 'MM/dd/yyyy') || ''));
         const user = await this.http.get<any>(`http://localhost:3000/user/${booking.userId}`, { headers : this.headers1}).toPromise();
         this.users.set(booking.userId, new User(user.firstName, user.lastName, user.mail, user.login,
-          user.image, user.birthdate, user.addres, user.zipcode, user.city, user.province, user.phoneNumber));
+          user.image, user.birthdate, user.addres, user.zipcode, user.city, user.province, user.phoneNumber, user.place_id));
     }
     this.filteredBookings = this.userControl.valueChanges.pipe(
         startWith<string | Booking[]>(this.bookings),
@@ -81,7 +82,7 @@ export class ProviderBookingsComponent implements OnInit {
   }
 
 
-  openDialog(fieldName: string, dbFieldName: string, fieldValue: string) {
+  openDialog(fieldName: string, dbFieldName: string, fieldValue: string): void {
     const values = {fieldName : `${fieldName}`,
       dbFieldName : `${dbFieldName}`,
       fieldValue : `${fieldValue}`};
@@ -93,7 +94,7 @@ export class ProviderBookingsComponent implements OnInit {
 
     });
   }
-  changeAsked(ChosenBooking: Booking) {
+  changeAsked(ChosenBooking: Booking): void {
     const values = {booking : ChosenBooking};
     const dialogRef = this.dialog.open(UpdateBookingComponent, {
       maxWidth: '100%',
@@ -108,7 +109,7 @@ export class ProviderBookingsComponent implements OnInit {
     });
   }
 
-  deleteAsked(booking: Booking) {
+  deleteAsked(booking: Booking): void {
     this.deleteBooking(booking).then(async () => {
       this.filteredBookings = this.userControl.valueChanges.pipe(
         startWith<string | Booking[]>(this.bookings),
@@ -133,7 +134,7 @@ export class ProviderBookingsComponent implements OnInit {
     });
     this.http.delete<any>(`http://localhost:3000/booking/${booking.id}`, { headers : this.headers1}).toPromise();
     this.bookings.forEach((value, index) => {
-      if(value.id === booking.id)
+      if (value.id === booking.id)
       {
         this.bookings.splice(index, 1);
         this.filteredBookings = EMPTY;

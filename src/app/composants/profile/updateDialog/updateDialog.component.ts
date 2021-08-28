@@ -94,7 +94,8 @@ export class UpdateDialogComponent implements OnInit {
 
   }
 
-  test(num: number){
+  test(num: number): void
+  {
     this.updateForm = new FormGroup(
       {
         oldValue: new FormControl({value : `${this.data.fieldValue}`, disabled : true}, [Validators.required, Validators.minLength(1)]),
@@ -115,7 +116,7 @@ export class UpdateDialogComponent implements OnInit {
       const day = date.getUTCDate() + 1;
       const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
       const user = new User(data.firstName, data.lastName, data.mail, data.login, `${sessionStorage.getItem('userId')}.jpg`,
-          formattedDate, data.address, data.zipcode, data.city, data.province, data.phoneNumber);
+          formattedDate, data.address, data.zipcode, data.city, data.province, data.phoneNumber, data.place_id);
       const staticValues = {id: `${sessionStorage.getItem('userId')}`, password: `${data.password}`, role: `${sessionStorage.getItem('role')}`};
        // let values = JSON.parse(JSON.stringify(user));
       const values = Object.assign({}, JSON.parse(JSON.stringify(user)), staticValues);
@@ -125,7 +126,7 @@ export class UpdateDialogComponent implements OnInit {
       this.updateUser(values);
     });
   }
-   updateUser(values: any)
+   updateUser(values: any): void
   {
     this.headers1.set('Content-Type', 'text');
     this.http.post(`http://localhost:3000/user/update/${sessionStorage.getItem('userId')}`,
@@ -143,12 +144,12 @@ export class UpdateDialogComponent implements OnInit {
     submitEvent.preventDefault();
     this.dialogRef.close();
   }
-  showPassword(submitEvent: Event) {
+  showPassword(submitEvent: Event): void {
     this.hide = !this.hide;
     submitEvent.preventDefault();
   }
 
-  handleFileInput(event: Event) {
+  handleFileInput(event: Event): void {
     const element = event.currentTarget as HTMLInputElement;
     const fileList: FileList | null = element.files;
     this.fileToUpload = fileList?.item(0) || null;

@@ -90,7 +90,7 @@ export const MY_DATE_FORMATS = {
     MatTooltipModule,
     MatCheckboxModule,
     GooglePlaceModule,
-    NgxMaterialTimepickerModule.setLocale('fr'),
+    NgxMaterialTimepickerModule.setLocale('fr')
   ],
   providers: [
     {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS}
