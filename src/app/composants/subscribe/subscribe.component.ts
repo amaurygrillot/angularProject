@@ -120,7 +120,6 @@ private token = '';
       this.user.address, this.user.postalCode, this.user.city, this.user.province,
       `${this.registerFormTwo.get('phone')?.value}`, this.placeId);
     const values = Object.assign({}, JSON.parse(JSON.stringify(newUser)), {password: `${this.user.password}`});
-    console.log('valeurs: ', JSON.stringify(this.registerFormTwo.value));
     const headers1 = new HttpHeaders()
       .set('Content-Type', 'application/json');
     this.http.post(' http://localhost:3000/auth/subscribe/client', values,
@@ -129,7 +128,6 @@ private token = '';
       this.token = data;
       this.dialogRef.close();
     });
-    this.isLoading = false;
   }
 
 
@@ -146,10 +144,9 @@ private token = '';
     const values = Object.assign({}, JSON.parse(JSON.stringify(newUser)),
       {
                 password: `${this.user.password}`,
-                maximum_range: `${this.registerFormTwo.get('maximum_range')}`,
-                description: `${this.registerFormTwo.get('description')}`
+                maximum_range: `${this.registerFormTwo.get('maximum_range')?.value}`,
+                description: `${this.registerFormTwo.get('description')?.value}`
               });
-    console.log('valeurs: ', JSON.stringify(this.registerFormTwo.value));
     const headers1 = new HttpHeaders()
       .set('Content-Type', 'application/json');
     this.http.post(' http://localhost:3000/auth/subscribe/provider', values,
@@ -158,7 +155,6 @@ private token = '';
         this.token = data;
         this.dialogRef.close();
       });
-    this.isLoading = false;
   }
 
   // tslint:disable-next-line:typedef
@@ -201,6 +197,7 @@ private token = '';
 }
 
   saveData(): void {
+    this.isLoading = true;
     if (this.data.providerSubscribe)
     {
       this.saveProviderData();
