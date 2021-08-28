@@ -90,7 +90,6 @@ private token = '';
     };
     const result = await this.directionObject.route(directionRequest);
     console.log(result.routes[0].legs[0].distance);
-    console.log(result.routes[0].legs[0].distance);
     this.user.address = address.name;
     this.user.city = address.address_components[2].long_name;
     this.user.province = address.address_components[4].long_name;

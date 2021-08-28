@@ -13,6 +13,9 @@ import {Pricing} from '../../models/pricing.model';
 import {ProviderPricing} from '../../models/providerPricing.model';
 import {MatSelect} from '@angular/material/select';
 import {NgxMaterialTimepicker24HoursFaceComponent} from 'ngx-material-timepicker';
+import DirectionsService = google.maps.DirectionsService;
+import TravelMode = google.maps.TravelMode;
+import TrafficModel = google.maps.TrafficModel;
 
 @Component({
   selector: 'app-booking',
@@ -52,6 +55,7 @@ export class BookingComponent implements OnInit {
   formattedStartDate!: string;
   formattedEndDate!: string;
   loading = false;
+  directionObject = new DirectionsService();
   public chosenHourlyPrice = 0;
   public chosenProvider: any;
   constructor(private fb: FormBuilder, private http: HttpClient, public dialog: MatDialog, private stripeService: StripeService) {
@@ -126,6 +130,8 @@ export class BookingComponent implements OnInit {
     const headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
+    const bookingUser = await this.http.get<any>(`http://localhost:3000/user/${sessionStorage.getItem('userId')}`,
+      { headers : headers1}).toPromise();
     const data = await this.http.get<any>(`http://localhost:3000/provider/pricingId/${this.select.value}`,
       { headers : headers1}).toPromise();
     for (const provider of data) {
@@ -133,7 +139,22 @@ export class BookingComponent implements OnInit {
         { headers : headers1}).toPromise();
       const bookings2 = await this.http.get<any>(`http://localhost:3000/booking/provider/${provider.id}/${encodeURIComponent(this.formattedEndDate)}`,
         { headers : headers1}).toPromise();
-      if (bookings1.length > 0 || bookings2.length > 0)
+      const directionRequest = {
+        origin: {placeId: provider.place_id},
+        destination: {placeId: bookingUser.place_id},
+        travelMode: TravelMode.DRIVING,
+        drivingOptions: {
+          departureTime: new Date(/* now, or future date */),
+          trafficModel: TrafficModel.PESSIMISTIC
+        },
+        unitSystem: google.maps.UnitSystem.METRIC
+      };
+      const route = await this.directionObject.route(directionRequest);
+      console.log(route.routes[0].legs[0].distance);
+      if (bookings1.length > 0
+        || bookings2.length > 0
+        || route.routes[0].legs[0].distance === undefined
+        || route.routes[0].legs[0].distance?.value > provider.maximum_range * 1000)
       {
         continue;
       }
