@@ -88,7 +88,7 @@ export class ProfileComponent implements OnInit {
       }
       const image = 'data:image/jpeg;base64,' + btoa(binary);
       this.users.push(new User(user.firstName, user.lastName, user.mail, user.login, image,
-        user.birthdate, user.address, user.postal_code, user.city, user.department, user.phoneNumber, provider.id));
+        user.birthdate, user.address, user.postal_code, user.city, user.department, user.phoneNumber, user.place_id, provider.id));
     }
     return null;
   }
