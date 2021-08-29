@@ -5,7 +5,10 @@
       <div mat-subheader>Ma description</div>
       <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
                        (click)="updateDescription()">{{provider.description}}</mat-list-option>
-      <div mat-subheader>Types de prestations proposées</div>
+      <div mat-subheader>
+        Types de prestations proposées
+        <button mat-flat-button (click)="openUpdatePricing()">Modifier</button>
+      </div>
       <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
         <mat-list>
 

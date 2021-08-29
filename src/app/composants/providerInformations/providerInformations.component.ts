@@ -7,7 +7,8 @@ import {Diploma} from '../../models/diploma.model';
 import {Experience} from '../../models/experience.model';
 import {Pricing} from '../../models/pricing.model';
 import {ProviderPricing} from '../../models/providerPricing.model';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {UpdatePricingsComponent} from '../profile/providerProfile/updatePricings/updatePricings.component';
 
 function checkBirthday(c: AbstractControl): { [key: string]: boolean } | null {
   const date = formatDate( Date.now(), 'yyyy', 'en');
@@ -66,7 +67,7 @@ export class ProviderInformationsComponent implements OnInit {
     .set('Content-Type', 'application/json');
   isVerified = false;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, public dialog: MatDialog) {
    }
 
   ngOnInit(): void {
@@ -135,5 +136,9 @@ export class ProviderInformationsComponent implements OnInit {
 
   updateDescription() {
 
+  }
+
+  openUpdatePricing() {
+    this.dialog.open(UpdatePricingsComponent);
   }
 }

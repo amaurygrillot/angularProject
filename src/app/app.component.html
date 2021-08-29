@@ -24,6 +24,7 @@
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="showProfile()">Mon profil</button>
           <button mat-menu-item *ngIf="isProvider"(click)="showProviderInformations()">Mes informations professionelles</button>
+          <button mat-menu-item *ngIf="isProvider"(click)="showUpdatePricings()">Gérer mes prestations proposées</button>
           <button mat-menu-item *ngIf="isProvider"(click)="showProviderAppointment()">Mes prestations</button>
           <button mat-menu-item *ngIf="isProvider"(click)="showProviderPlanning()">Mon emploi du temps</button>
           <button mat-menu-item (click)="showAppointment()">Mes rendez-vous personnels</button>
@@ -31,6 +32,7 @@
         </mat-menu>
       </ng-template>
       <app-provider-informations *ngIf="showProvInfo"></app-provider-informations>
+      <app-update-pricings *ngIf="showUpdPricing"></app-update-pricings>
       <app-profile *ngIf="showProf" profileType = "user"></app-profile>
       <app-user-bookings *ngIf="showAppoint"></app-user-bookings>
       <app-provider-bookings *ngIf="showProviderAppoint"></app-provider-bookings>

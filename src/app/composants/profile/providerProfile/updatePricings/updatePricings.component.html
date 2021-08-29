@@ -1,0 +1,35 @@
+<mat-card>
+  <mat-card-title>Mettre à jour le champ</mat-card-title>
+    <mat-card-content>
+      <div class="header">
+      </div>
+
+
+        <mat-nav-list *ngFor="let pricing of allPricings">
+          <hr>
+          <div mat-subheader>{{pricing.name}}</div>
+
+          <p>Description : {{pricing.description}}</p>
+          <p>Type : {{pricing.type}}</p>
+          <mat-checkbox (click)="setChecked(pricing)">
+            Proposer cette prestation
+          </mat-checkbox>
+          <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
+            <input type="number" step="1" min="1" placeholder="Entrez le prix horaire de cette prestation" matInput>
+          </mat-form-field>
+            <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
+              <input type="number" step="1" min = "1" placeholder="Entrez la durée minimum de cette prestation en minutes" matInput>
+          </mat-form-field>
+
+          <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
+          <input type="number" step="1"  min = "1" placeholder="Entrez la durée maximum de cette prestation en minutes" matInput>
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" *ngIf="!loading && pricingChecks.get(pricing.id || '')" (click)="updatePricing(pricing)">Mettre à jour</button>
+
+        </mat-nav-list>
+
+        <mat-spinner *ngIf="loading"></mat-spinner>
+    </mat-card-content>
+  </mat-card>
+

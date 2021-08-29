@@ -22,6 +22,7 @@ export class AppComponent {
   isLogged = sessionStorage.getItem('token') !== null;
   showProf = false;
   showAppoint = false;
+  showUpdPricing = false;
   image: any;
   pageReloaded: any;
   @ViewChild('tabGroup') tabGroup: MatTabGroup | undefined;
@@ -72,8 +73,6 @@ export class AppComponent {
     });
     return null;
   }
-  // tslint:disable-next-line:typedef
-
 
   showSubscribeUser(): void {
     const dialogRef = this.dialog.open(SubscribeComponent, {
@@ -169,6 +168,7 @@ export class AppComponent {
     this.showPlanning = false;
     this.showAppoint = false;
     this.showProviderAppoint = false;
+    this.showUpdPricing = false;
     this.selectInformationTab();
   }
 
@@ -178,10 +178,22 @@ export class AppComponent {
     this.showPlanning = false;
     this.showProviderAppoint = false;
     this.showProvInfo = false;
+    this.showUpdPricing = false;
     this.selectInformationTab();
   }
   showProviderAppointment(): void {
     this.showProviderAppoint = true;
+    this.showProf = false;
+    this.showPlanning = false;
+    this.showAppoint = false;
+    this.showProvInfo = false;
+    this.showUpdPricing = false;
+    this.selectInformationTab();
+  }
+
+  showUpdatePricings(): void {
+    this.showUpdPricing = true;
+    this.showProviderAppoint = false;
     this.showProf = false;
     this.showPlanning = false;
     this.showAppoint = false;

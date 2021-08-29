@@ -40,6 +40,7 @@ import {ProviderInformationsComponent} from './composants/providerInformations/p
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
+import {UpdatePricingsComponent} from './composants/profile/providerProfile/updatePricings/updatePricings.component';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'MM/DD/YYYY',
@@ -63,7 +64,8 @@ export const MY_DATE_FORMATS = {
     ProviderProfileComponent,
     UserBookingsComponent,
     ProviderBookingsComponent,
-    UpdateBookingComponent
+    UpdateBookingComponent,
+    UpdatePricingsComponent
   ],
   imports: [
     BrowserModule,
