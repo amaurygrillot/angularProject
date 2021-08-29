@@ -24,19 +24,32 @@ export class UpdatePricingsComponent implements OnInit {
     .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
     .set('Content-Type', 'application/json');
   allPricings = [] as Pricing[];
-  pricingChecks: Map<string, any> = new Map<string, boolean>();
+  allProviderPricings: Map<string, any> = new Map<string, any>();
+  pricingChecks: Map<string, any> = new Map<string, any>();
+  provider: any;
 
   constructor(private http: HttpClient, private fb: FormBuilder) {
-      this.getAllPricings();
+
 
   }
 
   ngOnInit(): void {
-
+    this.getAllPricings();
   }
   public submitChanges(): void
   {
 
+  }
+
+  async getAllProviderPricings(): Promise<any>
+  {
+    this.provider = await this.http.get<any>(`http://localhost:3000/provider/userId/${sessionStorage.getItem('userId')}`
+      , { headers : this.headers1}).toPromise();
+
+    this.provider.pricing.forEach((value: any) => {
+      this.pricingChecks.set(value.pricingId, true);
+      this.allProviderPricings.set(value.pricingId, value);
+    });
   }
 
   async getAllPricings(): Promise<any> {
@@ -47,15 +60,53 @@ export class UpdatePricingsComponent implements OnInit {
       this.allPricings.push(pricingObj);
       this.pricingChecks.set(pricingObj.id || '', false);
     }
+    this.getAllProviderPricings();
   }
 
 
   setChecked(pricing: Pricing): void {
     this.pricingChecks.set(pricing.id || '', !this.pricingChecks.get(pricing.id || ''));
-    console.log(this.pricingChecks);
   }
 
-  updatePricing(pricing: Pricing) {
+  async updatePricing(event: Event, pricing: Pricing): Promise<any> {
+      for (const value of this.provider.pricing) {
+        if (value.pricingId === pricing.id)
+        {
+          await this.http.put(`http://localhost:3000/pricing/provider/${this.provider.id}`,
+            this.allProviderPricings?.get(pricing.id || ''),
+            {headers : this.headers1}).toPromise();
+          return;
+        }
+      }
+      const values = Object.assign(this.allProviderPricings?.get(pricing.id || ''),
+        {
+          pricingId: pricing.id,
+          providerId: this.provider.id
+        });
+      await this.http.post(`http://localhost:3000/pricing/provider`,
+      values,
+      {headers : this.headers1}).toPromise();
+  }
 
+  registerChange(event: Event, pricing: Pricing, fieldName: string): void {
+    const value = (event.target as HTMLInputElement).value;
+    if (this.allProviderPricings?.get(pricing.id || '') !== undefined
+      && this.allProviderPricings?.get(pricing.id || '')[fieldName] !== undefined) {
+      // @ts-ignore
+      this.allProviderPricings?.get(pricing.id || '')[fieldName] = value;
+    }
+    else {
+      let newValues = {};
+      // tslint:disable-next-line:no-eval
+      eval(`newValues = { ${fieldName} : value}`);
+      let oldValues = {};
+      if(this.allProviderPricings?.get(pricing.id || '') !== undefined)
+      {
+        oldValues = this.allProviderPricings?.get(pricing.id || '');
+      }
+      this.allProviderPricings?.set(pricing.id || '',
+        Object.assign(oldValues, newValues));
+    }
+    console.log(this.allProviderPricings?.get(pricing.id || ''));
   }
 }

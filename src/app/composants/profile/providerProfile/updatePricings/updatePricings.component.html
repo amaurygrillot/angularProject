@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card style="max-height: 100%; max-width: 90%">
   <mat-card-title>Mettre à jour le champ</mat-card-title>
     <mat-card-content>
       <div class="header">
@@ -11,21 +11,36 @@
 
           <p>Description : {{pricing.description}}</p>
           <p>Type : {{pricing.type}}</p>
-          <mat-checkbox (click)="setChecked(pricing)">
+          <mat-checkbox [checked]="pricingChecks.get(pricing.id || '')" (change)="setChecked(pricing)">
             Proposer cette prestation
           </mat-checkbox>
-          <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
-            <input type="number" step="1" min="1" placeholder="Entrez le prix horaire de cette prestation" matInput>
-          </mat-form-field>
+          <br>
+          <form (submit)="updatePricing($event, pricing)">
             <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
-              <input type="number" step="1" min = "1" placeholder="Entrez la durée minimum de cette prestation en minutes" matInput>
-          </mat-form-field>
+              <input type="number" step="1" min="1"
+                     [value]="allProviderPricings?.get(pricing.id || '')?.hourlyPrice || 0"
+                     placeholder="Entrez le prix horaire de cette prestation" matInput
+                     (change)="registerChange($event, pricing, 'hourlyPrice')"
+                     [required] = "true">
+            </mat-form-field>
+              <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
+                <input type="number" step="1" min = "1"
+                       [value]="allProviderPricings?.get(pricing.id || '')?.minimum_time || 0"
+                       placeholder="Entrez la durée minimum de cette prestation en minutes"
+                       (change)="registerChange($event, pricing, 'minimum_time')"
+                       [required]="true" matInput>
+            </mat-form-field>
 
-          <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
-          <input type="number" step="1"  min = "1" placeholder="Entrez la durée maximum de cette prestation en minutes" matInput>
-          </mat-form-field>
-
-          <button mat-flat-button color="primary" *ngIf="!loading && pricingChecks.get(pricing.id || '')" (click)="updatePricing(pricing)">Mettre à jour</button>
+            <mat-form-field class = "full-width" *ngIf="pricingChecks.get(pricing.id || '')">
+            <input type="number" step="1"  min = "1"
+                   [value]="allProviderPricings?.get(pricing.id || '')?.maximum_time || 0"
+                   placeholder="Entrez la durée maximum de cette prestation en minutes"
+                   (change)="registerChange($event, pricing, 'maximum_time')"
+                   [required]="true" matInput>
+            </mat-form-field>
+            <br>
+            <button mat-flat-button color="primary" type = "submit">Mettre à jour</button>
+          </form>
 
         </mat-nav-list>
 
