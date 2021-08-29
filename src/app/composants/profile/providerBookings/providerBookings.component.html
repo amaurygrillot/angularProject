@@ -13,7 +13,7 @@
     <hr>
       <div mat-subheader>Réservation #{{booking.id}}</div>
 
-      <p>Date de la commande : {{booking.date}}</p>
+      <p>Date de la commande : {{booking.createdAt}}</p>
       <p>Commandée par : {{users.get(booking.userId).firstName}} {{users.get(booking.userId).lastName}}</p>
       <p>Mail de l'utilisateur : {{users.get(booking.userId).mail}}</p>
       <p>Date de départ : {{booking.createdAt}}</p>

@@ -8,16 +8,47 @@
              aria-label="Select Users" matInput [formControl]="userControl">
 
     </mat-form-field>
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8"
+           style="min-width: 100%; min-height: 70%">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>id</th>
+        <td mat-cell *matCellDef="let element"> {{element.id}}</td>
+      </ng-container>
 
-    <mat-nav-list *ngFor="let booking of filteredBookings | async">
-    <hr>
-      <div mat-subheader>Réservation #{{booking.id}}</div>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date de commande</th>
+        <td mat-cell *matCellDef="let element"> {{element.createdAt}}</td>
+      </ng-container>
 
-      <a>Date de la commande : {{booking.date}}</a>
-      <p>Id du provider : {{booking.providerId}}</p>
-      <p>Date de départ : {{booking.createdAt}}</p>
-      <button mat-flat-button color="primary" (click)="changeAsked(booking.id,booking.providerId)">Demander à changer</button>
-    </mat-nav-list>
+      <ng-container matColumnDef="startDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Début du rendez-vous</th>
+        <td mat-cell *matCellDef="let element"> {{element.startDate}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="endDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin du rendez-vous</th>
+        <td mat-cell *matCellDef="let element"> {{element.endDate}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix</th>
+        <td mat-cell *matCellDef="let element"> {{element.price / 100}}€</td>
+      </ng-container>
+
+      <ng-container matColumnDef="providerId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Id du prestataire</th>
+        <td mat-cell *matCellDef="let element"> {{element.providerId}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="askChange">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-flat-button color="primary" (click)="changeAsked(element.id,element.providerId)">Demander à changer</button></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
   </mat-card-content>
   </mat-card>
 

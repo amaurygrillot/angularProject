@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
 import { FormControl, FormGroup, Validator} from '@angular/forms';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
@@ -10,6 +10,8 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {ProviderProfileComponent} from '../providerProfile/providerProfile.component';
 import {Booking} from '../../../models/booking';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-user-bookings',
@@ -17,10 +19,9 @@ import {Booking} from '../../../models/booking';
   styleUrls: ['./userBookings.component.css'],
   providers: [DatePipe]
 })
-export class UserBookingsComponent implements OnInit {
+export class UserBookingsComponent implements OnInit, AfterViewInit {
   @Input() profileType!: string;
   bookings: Booking[] = [];
-  toolTipMessage = 'Mettre le champ à jour';
   title!: string;
   filteredBookings!: Observable<Booking[]>;
   userControl = new FormControl();
@@ -29,14 +30,20 @@ export class UserBookingsComponent implements OnInit {
     .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
     .set('Content-Type', 'application/json');
   image = sessionStorage.getItem('image');
-  constructor(private http: HttpClient, public dialog: MatDialog, private datePipe: DatePipe) {
+  dataSource = new MatTableDataSource();
+  displayedColumns: string[] = ['id', 'createdAt', 'startDate', 'endDate', 'price', 'providerId', 'askChange'];
+  @ViewChild(MatSort) sort!: MatSort;
 
+  constructor(private http: HttpClient, public dialog: MatDialog, private datePipe: DatePipe) {
   }
 
   ngOnInit(): void {
 
       this.title = 'Vos réservations';
       this.getAllBookings();
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   filter(filter: string): Booking[] {
@@ -52,32 +59,52 @@ export class UserBookingsComponent implements OnInit {
     }
   }
 
-  optionClicked(event: Event, user: Booking) {
+  sortByCreatedDate(): void
+  {
+    this.filteredBookings = this.filteredBookings.pipe(map((data) => {
+      data.sort((a, b) => {
+        return a.createdAt < b.createdAt ? -1 : 1;
+      });
+      return data;
+    }));
+  }
+  sortByStartDate(): void
+  {
+    this.filteredBookings = this.filteredBookings.pipe(map((data) => {
+      data.sort((a, b) => {
+        return a.startDate < b.startDate ? -1 : 1;
+      });
+      return data;
+    }));
+  }
+  optionClicked(event: Event, user: Booking): void {
     event.stopPropagation();
   }
 
-  getAllBookings()
+  async getAllBookings(): Promise<any>
   {
     this.http.get(`http://localhost:3000/booking/userBookings/${sessionStorage.getItem('userId')}`, { headers : this.headers1})
       .subscribe((data: any) => {
       data.forEach((booking: any) => {
         this.bookings.push(new Booking(booking.id,
-          booking.userId, booking.providerId, this.datePipe.transform(booking.date, 'MM/dd/yyyy') || '',
-          booking.pricingId, this.datePipe.transform(booking.updateAt, 'MM/dd/yyyy') || '',
+          booking.userId, booking.providerId, this.datePipe.transform(booking.startDate, 'MM/dd/yyyy hh:mm') || '',
+          this.datePipe.transform(booking.endDate, 'MM/dd/yyyy hh:mm') || '',
+          booking.pricingId, booking.price, this.datePipe.transform(booking.updateAt, 'MM/dd/yyyy hh:mm') || '',
           this.datePipe.transform(booking.createdAt, 'MM/dd/yyyy') || ''));
       });
-      console.log('lenght book ' + this.bookings.length);
       this.filteredBookings = this.userControl.valueChanges.pipe(
         startWith<string | Booking[]>(this.bookings),
         map(value => typeof value === 'string' ? value : this.lastFilter),
         map(filter => this.filter(filter))
       );
+        this.filteredBookings.subscribe(bookings => {
+          this.dataSource.data = bookings as Booking[];
+        });
     });
-
   }
 
 
-  openDialog(fieldName: string, dbFieldName: string, fieldValue: string) {
+  openDialog(fieldName: string, dbFieldName: string, fieldValue: string): void {
     const values = {fieldName : `${fieldName}`,
       dbFieldName : `${dbFieldName}`,
       fieldValue : `${fieldValue}`};
@@ -90,7 +117,7 @@ export class UserBookingsComponent implements OnInit {
     });
   }
 
-  showProviderProfile(providerId: string) {
+  showProviderProfile(providerId: string): void {
     const dialogRef = this.dialog.open(ProviderProfileComponent);
     dialogRef.afterClosed().subscribe(result => {
       // tslint:disable-next-line:no-eval
@@ -99,7 +126,7 @@ export class UserBookingsComponent implements OnInit {
     });
   }
 
-  changeAsked(idBooking: string, providerId: string) {
+  changeAsked(idBooking: string, providerId: string): void {
     const body = {
       mail : '',
       bookingId : idBooking,

@@ -38,6 +38,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {GooglePlaceModule} from 'ngx-google-places-autocomplete';
 import {ProviderInformationsComponent} from './composants/providerInformations/providerInformations.component';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import {MatTableModule} from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'MM/DD/YYYY',
@@ -90,7 +92,9 @@ export const MY_DATE_FORMATS = {
     MatTooltipModule,
     MatCheckboxModule,
     GooglePlaceModule,
-    NgxMaterialTimepickerModule.setLocale('fr')
+    NgxMaterialTimepickerModule.setLocale('fr'),
+    MatTableModule,
+    MatSortModule
   ],
   providers: [
     {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS}
