@@ -36,7 +36,7 @@ export class BookingComponent implements OnInit {
   providerPricings: Map<string, any> = new Map<string, any>();
   lastFilter = '';
   bookingForm!: FormGroup;
-  isInvalid = false;
+  isInvalid = true;
   cardCaptureReady = false;
   cardReady = false;
   formFilled =  false;
@@ -61,6 +61,9 @@ export class BookingComponent implements OnInit {
   mutlipleDays = false;
   public chosenHourlyPrice = 0;
   public chosenProvider: any;
+  public showTimeError = false;
+  public incompatible = false;
+  public wrongHour = false;
   constructor(private fb: FormBuilder, private http: HttpClient, public dialog: MatDialog, private stripeService: StripeService) {
 
   }
@@ -109,9 +112,40 @@ export class BookingComponent implements OnInit {
     this.chosenProvider = provider;
     this.chosenHourlyPrice = this.providerPricings.get(providerId || '')[0]?.hourlyPrice;
     this.chosenProviderPricing = this.providerPricings.get(providerId || '')[0];
+    if (this.checkTimeValidity()) {
+      this.isInvalid = false;
+    }
     event.preventDefault();
   }
-  // tslint:disable-next-line:typedef
+  public checkTimeValidity(): boolean
+  {
+    const timeDifference = this.calculateTimeDifference();
+    console.log(timeDifference);
+    if (this.showProvi
+      && this.chosenProviderPricing !== undefined
+      && (timeDifference > this.chosenProviderPricing.maxmimum_time
+      || timeDifference < this.chosenProviderPricing.minimum_time))
+    {
+      this.showTimeError = true;
+      this.wrongHour = true;
+      this.isInvalid = true;
+      return false;
+    }
+    else if (timeDifference <= 0)
+    {
+      this.showTimeError = true;
+      this.incompatible = true;
+      this.isInvalid = true;
+      return false;
+    }
+    else
+    {
+      this.showTimeError = false;
+      this.wrongHour = false;
+      this.incompatible = false;
+      return true;
+    }
+  }
 
   public saveData(submitEvent: Event): void{
     if (sessionStorage.getItem('token') === null)
@@ -121,7 +155,13 @@ export class BookingComponent implements OnInit {
       this.isInvalid = true;
       alert('Connectez vous pour pouvoir prendre un rendez-vous');
     }
-    this.calculatePrice();
+    const timeDifference = this.calculateTimeDifference();
+    if (!this.checkTimeValidity())
+    {
+      submitEvent.preventDefault();
+      return;
+    }
+    this.price = parseInt(Math.round((this.chosenHourlyPrice * 100) * (timeDifference / 60)).toFixed(2), 10) ;
     if (this.stepper.selectedIndex === 0)
     {
       this.stepper.selected._completedOverride = true;
@@ -129,7 +169,7 @@ export class BookingComponent implements OnInit {
     }
     this.stepper.next();
   }
-  public calculatePrice(): void
+  public calculateTimeDifference(): number
   {
     let startDate: Date;
     let endDate: Date;
@@ -153,10 +193,8 @@ export class BookingComponent implements OnInit {
         , parseInt(this.bookingForm.get('endHour')?.value.substring(3, 5), 10), 0, 0 );
     }
     let timeDifference = (endDate.getTime() - startDate.getTime());
-    console.log(timeDifference);
     timeDifference = timeDifference / 60000;
-    console.log(timeDifference / 60);
-    this.price = parseInt(Math.round((this.chosenHourlyPrice * 100) * (timeDifference / 60)).toFixed(2), 10) ;
+    return timeDifference;
   }
   async getAllProviders(): Promise<User[] | null>
   {
@@ -287,6 +325,17 @@ export class BookingComponent implements OnInit {
         || (this.bookingForm.contains(('endHour')) && this.bookingForm.get('endHour')?.invalid))
     {
       return;
+    }
+    if (!this.checkTimeValidity())
+    {
+      // @ts-ignore
+      this.stepper.steps.get(0)._completedOverride = false;
+      this.formFilled = false;
+      return;
+    }
+    else if (this.showProvi && this.chosenProviderPricing !== undefined)
+    {
+      this.isInvalid = false;
     }
     let startDate: Date;
     let endDate: Date;

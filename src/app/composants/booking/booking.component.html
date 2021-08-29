@@ -25,10 +25,11 @@
 
                   <mat-form-field appearance="fill" class="example-form-field">
                     <mat-label>Entrez vos dates</mat-label>
-                    <mat-date-range-input  [rangePicker]="rangePicker">
+                    <mat-date-range-input  [rangePicker]="rangePicker" [min]="today">
                       <input (dateChange)="showProviders()"
-                             formControlName="startDatePicker" #startDatePicker matStartDate
-                             placeholder="Start date" required>
+                             formControlName="startDatePicker" #startDatePicker
+                             [min]="today"
+                             matStartDate placeholder="Start date" required>
                       <input (dateChange)="showProviders()"
                              formControlName="endDatePicker" #endDatePicker matEndDate
                              placeholder="End date" required>
@@ -85,17 +86,21 @@
                   <button mat-icon-button>
                     <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
                   </button>
-                  Tps min. : {{providerPricings.get(provider.providerId || "")[0]?.minimum_time}}mn
-                  Tps max. : {{providerPricings.get(provider.providerId || "")[0]?.maximum_time}}mn
+                  Tps min. : {{providerPricings.get(provider.providerId || "")[0]?.minimum_time}}mn |
+                  Tps max. : {{providerPricings.get(provider.providerId || "")[0]?.maximum_time}}mn |
                   Prix/h : {{providerPricings.get(provider.providerId || "")[0]?.hourlyPrice}}€
                 </mat-option>
               </mat-autocomplete>
               </div>
             </div>
 
+          <div *ngIf="showTimeError" style="display: block" class="invalid-feedback">
+            <div *ngIf="incompatible">Les heures séléctionnées sont incompatibles</div>
+            <div *ngIf="wrongHour">Ce prestataire n'est disponible que pour {{chosenProviderPricing.minimum_time}}mn à {{chosenProviderPricing.maximum_time}}mn</div>
+          </div>
 
             <div class="text-right">
-                <button mat-flat-button [color]="!isInvalid?'primary':'warn'" type="submit" matStepperNext #confirmButton>
+                <button mat-flat-button [disabled]="isInvalid" color="primary" type="submit" matStepperNext #confirmButton>
                     Confirmer et passer au paiement
                 </button>
             </div>
