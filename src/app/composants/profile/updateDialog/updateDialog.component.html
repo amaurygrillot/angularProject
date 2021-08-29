@@ -20,7 +20,7 @@
                 <a class="text-link" class="aLink" routerLink="/auth/forgot-password">Forgot Password?</a>
               </span>
               -->
-              <mat-form-field class="full-width" appearance="outline" *ngIf="!isDate && !isImage">
+              <mat-form-field class="full-width" appearance="outline" *ngIf="!isDate && !isImage && !isAddress">
                   <mat-label>Nouveau {{data.fieldName}}</mat-label>
                     <input formControlName="newValue" matInput [type]=" isPassword && hide ? 'password' : 'text'" required />
                       <button  mat-icon-button matSuffix (click)="showPassword($event)" [attr.aria-label]="'Hide Password'"
@@ -60,12 +60,23 @@
               </div>
               </mat-form-field>
 
-            <mat-label for="file">Choisir un fichier</mat-label>
-            <input type="file"
+            <mat-label for="file" *ngIf="isImage">Choisir un fichier</mat-label>
+            <input *ngIf="isImage" type="file"
                    id="file"
                    accept="image/jpeg"
                    formControlName="image"
                    (change)="handleFileInput($event)">
+
+          <div class="form-row" *ngIf="isAddress">
+            <div class="col-md-6 mb-3">
+              <label>Adresse</label>
+              <div class="container">
+                <input ngx-google-places-autocomplete
+                       (onAddressChange)="handleAddressChange($event)"
+                       formControlName="adresse" id = "adresse" #adresse required/>
+              </div>
+            </div>
+          </div>
 
 
         </div>

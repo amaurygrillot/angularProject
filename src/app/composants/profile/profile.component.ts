@@ -88,7 +88,7 @@ export class ProfileComponent implements OnInit {
       }
       const image = 'data:image/jpeg;base64,' + btoa(binary);
       this.users.push(new User(user.firstName, user.lastName, user.mail, user.login, image,
-        user.birthdate, user.address, user.zipcode, user.city, user.province, user.phoneNumber, provider.id));
+        user.birthdate, user.address, user.postal_code, user.city, user.department, user.phoneNumber, provider.id));
     }
     return null;
   }
@@ -104,8 +104,9 @@ export class ProfileComponent implements OnInit {
       .subscribe((session: any) => {
         this.http.get(`http://localhost:3000/user/${session.userId}`, { headers : headers1})
           .subscribe(async (data: any) => {
+            console.log(data);
             this.user = new User(data.firstName, data.lastName, data.mail, data.login, data.image,
-              data.birthdate, data.address, data.zipcode, data.city, data.province, data.phoneNumber, data.place_id);
+              data.birthdate, data.address, data.postal_code, data.city, data.department, data.phoneNumber, data.place_id);
             this.user.firstName = data.firstName;
             this.user.lastName = data.lastName;
             this.user.mail = data.mail;
@@ -120,14 +121,15 @@ export class ProfileComponent implements OnInit {
   openDialog(fieldName: string, dbFieldName: string, fieldValue: string | null): void {
     const values = {fieldName : `${fieldName}`,
       dbFieldName : `${dbFieldName}`,
-      fieldValue : `${fieldValue}`};
+      fieldValue : `${fieldValue}`,
+      user: `${JSON.stringify(this.user)}`,
+      password: `${this.password}`};
     const dialogRef = this.dialog.open(UpdateDialogComponent, {data : values});
     dialogRef.afterClosed().subscribe(result => {
       this.user = new User(result.firstName, result.lastName, result.mail, result.login, result.image,
         result.birthdate, result.address, result.zipcode, result.city, result.province, result.phoneNumber, result.place_id);
       // tslint:disable-next-line:no-eval
       eval(`this.user.${result.fieldName} = '${result.value}'`);
-      console.log('The dialog was closed');
       this.image = sessionStorage.getItem('image');
     });
   }

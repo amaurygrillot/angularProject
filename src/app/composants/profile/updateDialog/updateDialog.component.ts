@@ -6,6 +6,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { MatProgressSpinner} from '@angular/material/progress-spinner';
 import {User} from '../../../models/user';
 import {merge} from 'rxjs';
+import TravelMode = google.maps.TravelMode;
+import TrafficModel = google.maps.TrafficModel;
+import DirectionsService = google.maps.DirectionsService;
 
 @Component({
   selector: 'app-update-dialog',
@@ -29,7 +32,9 @@ export class UpdateDialogComponent implements OnInit {
   isMail = false;
   isLogin = false;
   isImage = false;
+  isAddress = false;
   fileToUpload: File | null = null;
+  directionObject = new DirectionsService();
   constructor(private http: HttpClient, private fb: FormBuilder, public dialogRef: MatDialogRef<UpdateDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) {
 
@@ -40,22 +45,22 @@ export class UpdateDialogComponent implements OnInit {
     if (this.data.dbFieldName === 'password')
     {
       this.isPassword = true;
-      this.test(8);
+      this.test();
     }
     else if (this.data.dbFieldName === 'birthdate')
     {
       this.isDate = true;
-      this.test(1);
+      this.test();
     }
     else if (this.data.dbFieldName === 'firstName')
     {
       this.isfirstName = true;
-      this.test(1);
+      this.test();
     }
     else if (this.data.dbFieldName === 'lastName')
     {
       this.islastName = true;
-      this.test(1);
+      this.test();
     }
     else if (this.data.dbFieldName === 'mail')
     {
@@ -63,7 +68,7 @@ export class UpdateDialogComponent implements OnInit {
       this.updateForm = new FormGroup(
         {
           oldValue: new FormControl({value : `${this.data.fieldValue}`, disabled : true}, [Validators.required, Validators.minLength(1)]),
-          newValue: new FormControl('', [Validators.required, Validators.minLength(1), Validators.email]),
+          newValue: new FormControl('', [Validators.required, Validators.email]),
           date: new FormControl('', [Validators.required])
         },
 
@@ -72,7 +77,7 @@ export class UpdateDialogComponent implements OnInit {
     else if (this.data.dbFieldName === 'login')
     {
       this.isLogin = true;
-      this.test(1);
+      this.test();
     }
     else if (this.data.dbFieldName === 'image')
     {
@@ -81,26 +86,37 @@ export class UpdateDialogComponent implements OnInit {
         {
           oldValue: new FormControl({value : `${sessionStorage.getItem('image')}`, disabled : true}),
           newValue: new FormControl('', [Validators.required]),
-          image: new FormControl('', [Validators.required, Validators.minLength(1)])
+          image: new FormControl('', [Validators.required])
+        },
+
+      );
+    }
+    else if (this.data.dbFieldName === 'address')
+    {
+      this.isAddress = true;
+      this.updateForm = new FormGroup(
+        {
+          oldValue: new FormControl({value : `${this.data.fieldValue}`, disabled : true}),
+          adresse: new FormControl('', [Validators.required])
         },
 
       );
     }
     else
     {
-      this.test(1);
+      this.test();
     }
 
 
   }
 
-  test(num: number): void
+  test(): void
   {
     this.updateForm = new FormGroup(
       {
         oldValue: new FormControl({value : `${this.data.fieldValue}`, disabled : true}, [Validators.required, Validators.minLength(1)]),
-        newValue: new FormControl('', [Validators.required, Validators.minLength(num)]),
-        date: new FormControl('', [Validators.required, Validators.minLength(num)])
+        newValue: new FormControl('', [Validators.required]),
+        date: new FormControl('', [Validators.required])
       },
 
     );
@@ -109,22 +125,25 @@ export class UpdateDialogComponent implements OnInit {
   // tslint:disable-next-line:typedef
   submitChanges(){
     this.loading = true;
-    this.http.get(`http://localhost:3000/user/${sessionStorage.getItem('userId')}`,
-      { headers : this.headers1}).subscribe(async (data: any) => {
-      const date = new Date(data.birthdate);
-      const month = date.getUTCMonth() + 1;
-      const day = date.getUTCDate() + 1;
-      const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
-      const user = new User(data.firstName, data.lastName, data.mail, data.login, `${sessionStorage.getItem('userId')}.jpg`,
-          formattedDate, data.address, data.zipcode, data.city, data.province, data.phoneNumber, data.place_id);
-      const staticValues = {id: `${sessionStorage.getItem('userId')}`, password: `${data.password}`, role: `${sessionStorage.getItem('role')}`};
-       // let values = JSON.parse(JSON.stringify(user));
-      const values = Object.assign({}, JSON.parse(JSON.stringify(user)), staticValues);
-        // tslint:disable-next-line:no-eval
+    if (!this.isAddress)
+    {
+      // tslint:disable-next-line:no-eval
       eval(`values['${this.data.dbFieldName}'] = '${this.updateForm.get('newValue')?.value}'`);
-
-      this.updateUser(values);
-    });
+    }
+    const user = Object.assign({}, JSON.parse(this.data.user));
+    const date = new Date(user.birthdate);
+    const month = date.getUTCMonth() + 1;
+    const day = date.getUTCDate() + 1;
+    const formattedDate = date.getUTCFullYear() + '-' + month + '-' + day;
+    user.birthdate = formattedDate;
+    const values = Object.assign(user,
+      {
+        zipcode: user.postalCode,
+        place_id: user.placeId,
+        password: this.data.password,
+        role: sessionStorage.getItem('role')
+      });
+    this.updateUser(values);
   }
    updateUser(values: any): void
   {
@@ -133,7 +152,7 @@ export class UpdateDialogComponent implements OnInit {
       values, { headers : this.headers1}).
       subscribe((data: any) => {
         this.loading = false;
-        this.dialogRef.close(values);
+        this.dialogRef.close(data);
       },
       (error => {
         console.log(error);
@@ -169,6 +188,17 @@ export class UpdateDialogComponent implements OnInit {
     };
     reader.readAsDataURL(this.fileToUpload || new File([''], `${sessionStorage.getItem('userId')}.jpg`));
 
+  }
+
+  public async handleAddressChange(address: any): Promise<any> {
+    console.log(this.data.user);
+    const user = JSON.parse(this.data.user);
+    user.address = address.name;
+    user.city = address.address_components[2].long_name;
+    user.province = address.address_components[4].long_name;
+    user.postalCode = address.address_components[6].long_name;
+    user.placeId = address.place_id;
+    this.data.user = JSON.stringify(user);
   }
 
 

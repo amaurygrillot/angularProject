@@ -38,15 +38,14 @@ public registerFormTwo: FormGroup;
   };
 private token = '';
   show = true;
-  title = 'google-places-autocomplete';
   placeId!: string;
   postalCode: any;
   maxDate = new Date();
   directionObject = new DirectionsService();
+
   constructor(private http: HttpClient, private fb: FormBuilder,
               public dialogRef: MatDialogRef<SubscribeComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
-    this.getRoute();
     this.registerFormOne = this.fb.group({
         firstName: new FormControl(),
         lastName: new FormControl(),
@@ -70,7 +69,6 @@ private token = '';
       maximum_range: new FormControl(),
       description: new FormControl()
   });
-
   }
   ngOnInit(): void {
     // this.registerForm.get('notification')?.valueChanges.subscribe(value => this.setNotificationSetting(value));
@@ -212,31 +210,6 @@ private token = '';
       return this.registerFormTwo.get('adresse')?.value === this.user.address ?
         {address: this.registerFormTwo.get('adresse')?.value} : null;
     };
-  }
-
-  async getRoute(): Promise<any> {
-    const directionRequest = {
-      origin: 'Chicago, IL',
-      destination: 'Los Angeles, CA',
-      waypoints: [
-        {
-          location: 'Joplin, MO',
-          stopover: false
-        },
-        {
-          location: 'Oklahoma City, OK',
-          stopover: true
-        }],
-      provideRouteAlternatives: false,
-      travelMode: TravelMode.DRIVING,
-      drivingOptions: {
-        departureTime: new Date(/* now, or future date */),
-        trafficModel: TrafficModel.PESSIMISTIC
-      },
-      unitSystem: google.maps.UnitSystem.METRIC
-    };
-    const result = await this.directionObject.route(directionRequest);
-    console.log(result);
   }
 }
 

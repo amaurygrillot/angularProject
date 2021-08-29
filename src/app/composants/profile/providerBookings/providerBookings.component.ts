@@ -68,11 +68,15 @@ export class ProviderBookingsComponent implements OnInit {
         this.bookings.push(new Booking(booking.id,
           booking.userId, booking.providerId, this.datePipe.transform(booking.startDate, 'MM/dd/yyyy hh:mm') || '',
           this.datePipe.transform(booking.endDate, 'MM/dd/yyyy hh:mm') || '',
-          booking.pricingId, booking.price, this.datePipe.transform(booking.updateAt, 'MM/dd/yyyy hh:mm') || '',
-          this.datePipe.transform(booking.createdAt, 'MM/dd/yyyy hh:mm') || ''));
+          booking.pricingId, booking.price, this.datePipe.transform(booking.updateAt, 'MM/dd/yyyy') || '',
+          this.datePipe.transform(booking.createdAt, 'MM/dd/yyyy') || ''));
         const user = await this.http.get<any>(`http://localhost:3000/user/${booking.userId}`, { headers : this.headers1}).toPromise();
-        this.users.set(booking.userId, new User(user.firstName, user.lastName, user.mail, user.login,
-          user.image, user.birthdate, user.addres, user.zipcode, user.city, user.province, user.phoneNumber, user.place_id));
+        console.log(user);
+        const userToBeAdded = new User(user.firstName, user.lastName, user.mail, user.login,
+          user.image, user.birthdate, user.addres, user.zipcode, user.city, user.province, user.phoneNumber, user.place_id)
+      console.log(userToBeAdded);
+      this.users.set(booking.userId, userToBeAdded);
+      console.log("here");
     }
     this.filteredBookings = this.userControl.valueChanges.pipe(
         startWith<string | Booking[]>(this.bookings),

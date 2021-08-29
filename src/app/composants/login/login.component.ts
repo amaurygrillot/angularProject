@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
           {headers: headers1}).toPromise();
         if(role === null)
         {
+          console.log("pas de role");
           sessionStorage.clear();
           this.loading = false;
           return;

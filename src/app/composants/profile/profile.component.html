@@ -27,17 +27,9 @@
                          (click)="openDialog('date de naissance','birthdate',user.birthdate)">{{user.birthdate}}</mat-list-option>
         <div mat-subheader>Adresse</div>
         <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
-                         (click)="openDialog('adresse','address',user.address)">{{user.address}}</mat-list-option>
-        <div mat-subheader>Code postal</div>
-        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
-                         (click)="openDialog('code postal','zipcode',user.zipcode)">{{user.zipcode}}</mat-list-option>
-        <div mat-subheader>Ville</div>
-        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
-                         (click)="openDialog('ville','city',user.city)">{{user.city}}</mat-list-option>
-        <div mat-subheader>Région :</div>
-        <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
-                         (click)="openDialog('région','province',user.province)">{{user.province}}</mat-list-option>
-
+                         (click)="openDialog('adresse','address',user.address + ', ' + user.city)">
+          {{user.address}},{{user.city}}
+        </mat-list-option>
       </mat-selection-list>
 
 
