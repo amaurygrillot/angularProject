@@ -26,6 +26,7 @@ export class BookingComponent implements OnInit {
   @ViewChild('card') card !: StripeCardComponent;
   @ViewChild('startDatePicker') startDatePicker!: ElementRef;
   @ViewChild('endDatePicker') endDatePicker!: ElementRef;
+  @ViewChild('datePicker') datePicker!: ElementRef;
   @ViewChild('select') select!: MatSelect;
   @ViewChild('stepper') stepper!: MatStepper;
   users: User[] = [];
@@ -56,6 +57,8 @@ export class BookingComponent implements OnInit {
   formattedEndDate!: string;
   loading = false;
   directionObject = new DirectionsService();
+  singleDay = false;
+  mutlipleDays = false;
   public chosenHourlyPrice = 0;
   public chosenProvider: any;
   constructor(private fb: FormBuilder, private http: HttpClient, public dialog: MatDialog, private stripeService: StripeService) {
@@ -64,11 +67,13 @@ export class BookingComponent implements OnInit {
   ngOnInit(): void {
     this.bookingForm = new FormGroup(
       {
-        rangePicker: new FormControl('', [Validators.required]),
         select: new FormControl('', [Validators.required]),
-        text: new FormControl('', [Validators.required]),
+        picker: new FormControl('', [Validators.required]),
+        endDatePicker: new FormControl('', [Validators.required]),
+        startDatePicker: new FormControl('', [Validators.required]),
         startHour: new FormControl('', [Validators.required]),
-        endHour: new FormControl('', [Validators.required])
+        endHour: new FormControl('', [Validators.required]),
+        text: new FormControl('', [Validators.required])
       }
     );
     this.initPricings();
@@ -89,9 +94,7 @@ export class BookingComponent implements OnInit {
   }
 
 
-  async optionClicked(event: Event, providerId: string | undefined) {
-    console.log('providerId : ' + providerId);
-    console.log('value : ' + this.bookingForm.get('text')?.value);
+  async optionClicked(event: Event, providerId: string | undefined): Promise<any> {
     this.chosenProviderId = providerId;
     const headers1 = new HttpHeaders()
       .set('Authorization', 'my-auth-token')
@@ -118,9 +121,42 @@ export class BookingComponent implements OnInit {
       this.isInvalid = true;
       alert('Connectez vous pour pouvoir prendre un rendez-vous');
     }
-    this.price = this.chosenHourlyPrice * 100 ; // * time
-    this.stepper.selected._completedOverride = true;
+    this.calculatePrice();
+    if (this.stepper.selectedIndex === 0)
+    {
+      this.stepper.selected._completedOverride = true;
+      submitEvent.preventDefault();
+    }
     this.stepper.next();
+  }
+  public calculatePrice(): void
+  {
+    let startDate: Date;
+    let endDate: Date;
+    if (this.singleDay)
+    {
+      startDate = new Date(this.bookingForm.get('picker')?.value);
+      startDate.setHours(parseInt(this.bookingForm.get('startHour')?.value.substring(0, 2), 10)
+        , parseInt(this.bookingForm.get('startHour')?.value.substring(3, 5), 10), 0, 0 );
+      endDate = new Date(this.bookingForm.get('picker')?.value);
+      endDate.setHours(parseInt(this.bookingForm.get('endHour')?.value.substring(0, 2), 10)
+        , parseInt(this.bookingForm.get('endHour')?.value.substring(3, 5), 10), 0, 0 );
+    }
+    else
+    {
+      console.log(this.bookingForm);
+      startDate = new Date(this.bookingForm.get('startDatePicker')?.value);
+      startDate.setHours(parseInt(this.bookingForm.get('startHour')?.value.substring(0, 2), 10)
+        , parseInt(this.bookingForm.get('startHour')?.value.substring(3, 5), 10), 0, 0 );
+      endDate = new Date(this.bookingForm.get('endDatePicker')?.value);
+      endDate.setHours(parseInt(this.bookingForm.get('endHour')?.value.substring(0, 2), 10)
+        , parseInt(this.bookingForm.get('endHour')?.value.substring(3, 5), 10), 0, 0 );
+    }
+    let timeDifference = (endDate.getTime() - startDate.getTime());
+    console.log(timeDifference);
+    timeDifference = timeDifference / 60000;
+    console.log(timeDifference / 60);
+    this.price = parseInt(Math.round((this.chosenHourlyPrice * 100) * (timeDifference / 60)).toFixed(2), 10) ;
   }
   async getAllProviders(): Promise<User[] | null>
   {
@@ -222,23 +258,52 @@ export class BookingComponent implements OnInit {
 
   selectPricing(event: Event, pricing: Pricing | undefined): void {
       this.chosenPricing = pricing;
+      if (this.chosenPricing?.type === 'single_day')
+      {
+        this.mutlipleDays = false;
+        this.singleDay = true;
+        this.bookingForm.get('startDatePicker')?.clearValidators();
+        this.bookingForm.get('endDatePicker')?.clearValidators();
+        this.bookingForm.get('picker')?.setValidators( [Validators.required]);
+      }
+      else
+      {
+        this.singleDay = false;
+        this.mutlipleDays = true;
+        this.bookingForm.get('startDatePicker')?.setValidators( [Validators.required]);
+        this.bookingForm.get('endDatePicker')?.setValidators( [Validators.required]);
+        this.bookingForm.get('picker')?.clearValidators();
+      }
+      this.showProviders();
   }
 
   showProviders(): void {
-    if (!this.startDatePicker.nativeElement.value ||
-        !this.endDatePicker.nativeElement.value ||
-        !this.select.value ||
-        !this.bookingForm.get('startHour')?.value ||
-        !this.bookingForm.get('endHour')?.value)
+    if ( (this.bookingForm.contains('rangePicker')
+              && this.bookingForm.get('endDatePicker')?.invalid
+              && this.bookingForm.get('startDatePicker')?.invalid)
+        || (this.bookingForm.contains('datePicker') && this.bookingForm.get('datePicker')?.invalid)
+        || this.bookingForm.get('select')?.invalid
+        || (this.bookingForm.contains('startHour') && this.bookingForm.get('startHour')?.invalid)
+        || (this.bookingForm.contains(('endHour')) && this.bookingForm.get('endHour')?.invalid))
     {
       return;
     }
-    const startDate = new Date(this.startDatePicker.nativeElement.value);
+    let startDate: Date;
+    let endDate: Date;
+    if (!this.bookingForm.get('picker')?.invalid)
+    {
+      startDate = new Date(this.bookingForm.get('picker')?.value);
+      endDate = new Date(this.bookingForm.get('picker')?.value);
+    }
+    else
+    {
+      startDate = new Date(this.bookingForm.get('endDatePicker')?.value);
+      endDate = new Date(this.bookingForm.get('startDatePicker')?.value);
+    }
     const startMonth = startDate.getUTCMonth() + 1;
     const startDay = startDate.getUTCDate() + 1;
     const startHour = this.bookingForm.get('startHour')?.value;
     this.formattedStartDate = startDate.getUTCFullYear() + '-' + startMonth + '-' + startDay + ' ' + startHour;
-    const endDate = new Date(this.startDatePicker.nativeElement.value);
     const endMonth = startDate.getUTCMonth() + 1;
     const endDay = startDate.getUTCDate() + 1;
     const endHour = this.bookingForm.get('endHour')?.value;
@@ -254,14 +319,14 @@ export class BookingComponent implements OnInit {
 
   }
 
-  private async initPricings() {
+  private async initPricings(): Promise<any> {
     const pricings = await this.http.get<any>(`http://localhost:3000/pricing/`).toPromise();
     for (const pricing of pricings){
-        this.allPricings.push(new Pricing(pricing.id, pricing.name, pricing.description));
+        this.allPricings.push(new Pricing(pricing.id, pricing.name, pricing.description, pricing.type));
     }
   }
 
-  saveHour() {
+  saveHour(): void {
     console.log(this.bookingForm.get('startHour')?.value);
   }
 }

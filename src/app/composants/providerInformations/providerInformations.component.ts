@@ -113,7 +113,7 @@ export class ProviderInformationsComponent implements OnInit {
     const pricings = await this.http.get<any>(`http://localhost:3000/pricing/`,
       { headers : this.headers1}).toPromise();
     for (const pricing of pricings) {
-      const newPricing = new Pricing(pricing.id, pricing.name, pricing.description);
+      const newPricing = new Pricing(pricing.id, pricing.name, pricing.description, pricing.type);
       this.pricings.push(newPricing);
     }
   }

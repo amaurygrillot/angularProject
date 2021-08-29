@@ -11,13 +11,27 @@
         <mat-step [editable]="notSubmitted" [stepControl]="bookingForm">
         <form novalidate (ngSubmit) = "saveData($event)" [formGroup]="bookingForm">
             <div class="form-row" >
-                <div class="col-md-6 mb-3" style="max-width : 30%">
+              <div class="col-md-6 mb-3" style="max-width : 30%">
+                <mat-form-field class="example-full-width" style="min-width : 100%" >
+                  <mat-select required placeholder="Veuillez choisir un type de prestation" formControlName="select" #select>
+                    <mat-option (click)="selectPricing($event, pricing)"
+                                *ngFor="let pricing of allPricings" [value]="pricing.id" [matTooltip]="pricing.description || ''">
+                      {{pricing.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+                <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="mutlipleDays">
 
                   <mat-form-field appearance="fill" class="example-form-field">
                     <mat-label>Entrez vos dates</mat-label>
                     <mat-date-range-input  [rangePicker]="rangePicker">
-                      <input (dateChange)="showProviders()" #startDatePicker matStartDate placeholder="Start date" required>
-                      <input (dateChange)="showProviders()" #endDatePicker matEndDate placeholder="End date" required>
+                      <input (dateChange)="showProviders()"
+                             formControlName="startDatePicker" #startDatePicker matStartDate
+                             placeholder="Start date" required>
+                      <input (dateChange)="showProviders()"
+                             formControlName="endDatePicker" #endDatePicker matEndDate
+                             placeholder="End date" required>
                     </mat-date-range-input>
                     <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
                     <mat-date-range-picker #rangePicker>
@@ -29,33 +43,32 @@
                   </mat-form-field>
 
                 </div>
-              <div class="col-md-6 mb-3">
+              <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="singleDay">
+              <mat-label>Choisissez une date</mat-label>
+              <input matInput [min]="today" [matDatepicker] = "picker"  formControlName="picker"
+                     style="min-width : 100%"
+                     required #datePicker (dateChange)="showProviders()">
+              <mat-datepicker-toggle matSuffix [for]="picker">
+              </mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+
+              </div>
+              <div class="col-md-6 mb-3" *ngIf="mutlipleDays || singleDay">
                 <div class="mat-form-field">
-                <label>Entrez l'heure de début</label>
-                <input placeholder="24hr format" aria-label="24hr format"
+                <input matInput
+                  placeholder="Entrez l'heure de début" aria-label="Entrez l'heure de début"
                        formControlName="startHour" [ngxTimepicker]="startHour" [format]="24"  readonly>
                 <ngx-material-timepicker (closed) = "showProviders()" #startHour></ngx-material-timepicker>
                 </div>
                 <div class="col">
-                  <label>Entrez l'heure de fin</label>
-                  <input placeholder="24hr format" aria-label="24hr format"
+                  <input matInput
+                    placeholder="Entrez l'heure de fin" aria-label="Entrez l'heure de fin"
                          formControlName="endHour" [ngxTimepicker]="endHour" [format]="24"  readonly>
                   <ngx-material-timepicker (closed)="showProviders()" #endHour></ngx-material-timepicker>
                 </div>
               </div>
 
-              <div class="col-md-6 mb-3" style="max-width : 30%">
-                <mat-form-field class="example-full-width" style="min-width : 100%" >
-                  <mat-select required formControlName="select" #select>
-                    <mat-option (click)="showProviders()"
-                        *ngFor="let pricing of allPricings" [value]="pricing.id" [matTooltip]="pricing.description || ''">
-                      {{pricing.name}}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-
-              <div class="col-md-6 mb-3" style="max-width : 30%" *ngIf="showProvi">
+              <div class="col-md-6 mb-3" style="max-width : 100%" *ngIf="showProvi">
 
               <mat-form-field class="example-full-width" style="min-width : 100%">
                 <input type="text" placeholder="Sélectionnez un prestataire" style="min-width : 100%"
@@ -72,9 +85,9 @@
                   <button mat-icon-button>
                     <img [src]="provider.image" style="width: 40px; height: 40px; border-radius: 100%">
                   </button>
-                  Temps minimum : {{providerPricings.get(provider.providerId || "")[0]?.minimum_time}}mn
-                  Temps maximum : {{providerPricings.get(provider.providerId || "")[0]?.maximum_time}}mn
-                  Prix horaire : {{providerPricings.get(provider.providerId || "")[0]?.hourlyPrice}}€
+                  Tps min. : {{providerPricings.get(provider.providerId || "")[0]?.minimum_time}}mn
+                  Tps max. : {{providerPricings.get(provider.providerId || "")[0]?.maximum_time}}mn
+                  Prix/h : {{providerPricings.get(provider.providerId || "")[0]?.hourlyPrice}}€
                 </mat-option>
               </mat-autocomplete>
               </div>
@@ -88,7 +101,7 @@
             </div>
         </form>
           </mat-step>
-        <mat-step [stepControl]="stripeTest" [editable]="notSubmitted && !formFilled">
+        <mat-step [stepControl]="stripeTest" [editable]="notSubmitted && !formFilled" (click)="saveData($event)">
 
           <form novalidate (ngSubmit)="makePayment($event)" [formGroup]="stripeTest">
             <div class="form-row">

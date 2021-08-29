@@ -40,11 +40,24 @@ export class LoginComponent implements OnInit {
       password: `${this.loginForm.get('password')?.value}`};
     this.http.post('http://localhost:3000/auth/login', user,
       { headers : headers1}).subscribe(async (data: any) => {
+        if(data === null)
+        {
+          sessionStorage.clear();
+          this.loading = false;
+          return;
+        }
         console.log('data : ' + JSON.stringify(data));
         sessionStorage.setItem('token', data.token);
         sessionStorage.setItem('userId', data.userId);
-        const role = await this.http.get<any>(`http://localhost:3000/user/${sessionStorage.getItem('userId')}`,
+        const role = await this.http.get<any>(`http://localhost:3000/user/${data.userId}`,
           {headers: headers1}).toPromise();
+        if(role === null)
+        {
+          sessionStorage.clear();
+          this.loading = false;
+          return;
+        }
+        console.log(role);
         sessionStorage.setItem('role', role.role);
         this.dialogRef.close();
         this.loading = false;
