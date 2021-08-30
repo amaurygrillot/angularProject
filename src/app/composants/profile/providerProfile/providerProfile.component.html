@@ -57,8 +57,10 @@
 
 
     </mat-selection-list>
-    <button mat-flat-button color="primary" *ngIf="isAdmin" (click)="validateDiploma()">Valider le prestataire</button>
-
+    <button mat-flat-button color="primary" *ngIf="isAdmin && !isVerified && !isLoading" (click)="validateDiploma()">Valider le prestataire</button>
+    <mat-progress-spinner *ngIf="isLoading"></mat-progress-spinner>
+    <mat-checkbox class="example-margin"
+                  [checked]="isVerified" disabled="true">Utilisateur vérifié</mat-checkbox>
   </mat-card-content>
   </mat-card>
 

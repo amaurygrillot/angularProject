@@ -38,6 +38,7 @@ export class ProviderProfileComponent implements OnInit {
   pricingHeight!: string;
   diplomaHeight!: string;
   isAdmin = false;
+  isLoading = false;
   image = sessionStorage.getItem('image');
   headers1 = new HttpHeaders()
     .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
@@ -60,7 +61,15 @@ export class ProviderProfileComponent implements OnInit {
     const provider = await this.http.get<any>(`http://localhost:3000/provider/providerId/${this.injectedData.providerId}`,
       { headers : this.headers1}).toPromise();
     this.provider.description = provider.description;
-    this.isVerified = provider.verified;
+    if(provider.verified === 'true')
+    {
+      this.isVerified = true;
+    }
+    else
+    {
+      this.isVerified = false;
+    }
+    console.log(provider);
     for (const diploma of provider.diploma) {
       this.http.get(`http://localhost:3000/diploma/file/${diploma.filename}`, {headers: this.headers1, responseType: 'arraybuffer'})
         .subscribe( (result: any) => {
@@ -112,6 +121,7 @@ export class ProviderProfileComponent implements OnInit {
     this.diplomaHeight = 'min-height: ' + this.provider.diploma.length * 40 + 'px';
   }
   validateDiploma(): void {
+    this.isLoading = true;
     this.headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
@@ -119,7 +129,8 @@ export class ProviderProfileComponent implements OnInit {
     this.http.post(`http://localhost:3000/provider/verify/${this.injectedData.providerId}`, {},
       {headers: this.headers1})
       .subscribe( (result: any) => {
-
+        this.isLoading = false;
+        this.isVerified = true;
       });
   }
 

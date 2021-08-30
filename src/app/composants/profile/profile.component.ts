@@ -75,7 +75,15 @@ export class ProfileComponent implements OnInit {
     const headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
-    const data = await this.http.get<any>(' http://localhost:3000/provider/verified', { headers : headers1}).toPromise();
+    let data: any;
+    if (sessionStorage.getItem('role') === 'admin')
+    {
+      data = await this.http.get<any>(' http://localhost:3000/provider/', { headers : headers1}).toPromise();
+    }
+    else
+    {
+      data = await this.http.get<any>(' http://localhost:3000/provider/verified', { headers : headers1}).toPromise();
+    }
     for (const provider of data) {
       const user = await this.http.get<any>(`http://localhost:3000/user/${provider.userId}`, { headers : headers1}).toPromise();
       const result = await this.http.get(`http://localhost:3000/user/file/${user.image}`,
