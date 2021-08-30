@@ -125,12 +125,13 @@ export class UpdateDialogComponent implements OnInit {
   // tslint:disable-next-line:typedef
   submitChanges(){
     this.loading = true;
+    console.log(this.data);
+    const user = Object.assign({}, JSON.parse(this.data.user));
     if (!this.isAddress)
     {
       // tslint:disable-next-line:no-eval
-      eval(`values['${this.data.dbFieldName}'] = '${this.updateForm.get('newValue')?.value}'`);
+      eval(`user.${this.data.dbFieldName} = '${this.updateForm.get('newValue')?.value}'`);
     }
-    const user = Object.assign({}, JSON.parse(this.data.user));
     const date = new Date(user.birthdate);
     const month = date.getUTCMonth() + 1;
     const day = date.getUTCDate() + 1;
@@ -138,11 +139,13 @@ export class UpdateDialogComponent implements OnInit {
     user.birthdate = formattedDate;
     const values = Object.assign(user,
       {
-        zipcode: user.postalCode,
+        zipcode: user.zipcode,
+        province: user.province,
         place_id: user.placeId,
         password: this.data.password,
         role: sessionStorage.getItem('role')
       });
+    console.log("ojkljb" + JSON.stringify(values));
     this.updateUser(values);
   }
    updateUser(values: any): void

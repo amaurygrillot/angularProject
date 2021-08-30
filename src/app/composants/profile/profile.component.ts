@@ -106,7 +106,7 @@ export class ProfileComponent implements OnInit {
           .subscribe(async (data: any) => {
             console.log(data);
             this.user = new User(data.firstName, data.lastName, data.mail, data.login, data.image,
-              data.birthdate, data.address, data.postal_code, data.city, data.department, data.phoneNumber, data.place_id);
+              data.birthdate, data.address, data.zipcode, data.city, data.province, data.phoneNumber, data.place_id);
             this.user.firstName = data.firstName;
             this.user.lastName = data.lastName;
             this.user.mail = data.mail;

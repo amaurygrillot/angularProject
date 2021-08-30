@@ -5,9 +5,9 @@
       <div mat-subheader>Ma description</div>
       <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox"
                        (click)="updateDescription()">{{provider.description}}</mat-list-option>
+      <hr>
       <div mat-subheader>
         Types de prestations proposées
-        <button mat-flat-button (click)="openUpdatePricing()">Modifier</button>
       </div>
       <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
         <mat-list>
@@ -16,11 +16,17 @@
             <mat-list-item>
               {{findPricing(providerPricing.pricingId || "")?.name}}
             </mat-list-item>
-            {{providerPricing.hourlyPrice}}
+            <mat-list-item>
+            {{providerPricing.hourlyPrice}}€/h
+            </mat-list-item>
+            <mat-list-item>
+              {{providerPricing.minimumTime}}mn à {{providerPricing.maximumTime}}mn
+            </mat-list-item>
+
           </mat-list-item>
         </mat-list>
       </mat-list-item>
-
+<hr style="margin-top: 40px;">
         <div mat-subheader>Diplomes</div>
         <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
           <mat-list>
@@ -30,7 +36,7 @@
             </mat-list-item>
           </mat-list>
         </mat-list-item>
-
+<hr>
         <div mat-subheader>Expérience</div>
         <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
           <mat-list>
