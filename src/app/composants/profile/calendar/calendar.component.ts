@@ -23,16 +23,14 @@ export class CalendarComponent implements OnInit {
   pricingChecks: Map<string, any> = new Map<string, any>();
   provider: any;
   events = [{}];
-  calendarOptions: CalendarOptions = {
-    initialView: 'timeGridWeek'
-  };
+  calendarOptions!: CalendarOptions;
+  finishedLoading = false;
 
   constructor(private http: HttpClient, private fb: FormBuilder) {
-    this.initCalendar();
   }
 
   ngOnInit(): void {
-
+    this.initCalendar();
   }
   public async initCalendar(): Promise<any>
   {
@@ -57,17 +55,21 @@ export class CalendarComponent implements OnInit {
         '&destination=chez%20' + user.firstName + '%20' + user.lastName +
         '&destination_place_id=' + user.place_id +
         '&travelmode=driving';
+        const startDate = new Date(booking.startDate);
+        const endDate = new Date(booking.endDate);
         this.events.push({
-           title : eventTitle ,
-           start: new Date(booking.startDate),
-           end: new Date(booking.endDate),
-           url: googleUrl
-         });
+            title: eventTitle,
+            start: startDate,
+            end: endDate,
+            url: googleUrl
+          });
       }
       this.calendarOptions = {
+        initialView: 'timeGridWeek',
         eventDidMount(info): void {
             info.el.title = 'Cliquez pour obtenir l\'itinéraire';
         },
+        nextDayThreshold: '00:00:00',
       events: this.events,
       eventTimeFormat: {
         hour: '2-digit',
@@ -84,5 +86,6 @@ export class CalendarComponent implements OnInit {
         },
         allDaySlot: false,
     };
+      this.finishedLoading = true;
   }
 }
