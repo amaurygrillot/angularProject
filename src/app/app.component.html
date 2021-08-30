@@ -23,14 +23,18 @@
 
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="showProfile()">Mon profil</button>
-          <button mat-menu-item *ngIf="isProvider"(click)="showProviderInformations()">Mes informations professionelles</button>
-          <button mat-menu-item *ngIf="isProvider"(click)="showUpdatePricings()">Gérer mes prestations proposées</button>
-          <button mat-menu-item *ngIf="isProvider"(click)="showProviderAppointment()">Mes prestations</button>
-          <button mat-menu-item *ngIf="isProvider"(click)="showProviderPlanning()">Mon emploi du temps</button>
+          <button mat-menu-item *ngIf="isProvider" (click)="showProviderInformations()">Mes informations professionelles</button>
+          <button mat-menu-item *ngIf="isProvider" (click)="showUpdatePricings()">Gérer mes prestations proposées</button>
+          <button mat-menu-item *ngIf="isProvider" (click)="showProviderAppointment()">Mes prestations</button>
+          <button mat-menu-item *ngIf="isProvider" (click)="showProviderPlanning()">Mon emploi du temps</button>
+          <button mat-menu-item *ngIf="isAdmin" (click)="showAdminBookings()">Administrer les rendez-vous</button>
+          <button mat-menu-item *ngIf="isAdmin" (click)="showAdminUsers()">Administrer les utilisateurs</button>
           <button mat-menu-item (click)="showAppointment()">Mes rendez-vous personnels</button>
 
         </mat-menu>
       </ng-template>
+      <app-admin-users *ngIf="showAdminUser"></app-admin-users>
+      <app-admin-bookings *ngIf="showAdminBooking"></app-admin-bookings>
       <app-calendar *ngIf="showPlanning"></app-calendar>
       <app-provider-informations *ngIf="showProvInfo"></app-provider-informations>
       <app-update-pricings *ngIf="showUpdPricing"></app-update-pricings>

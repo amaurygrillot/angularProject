@@ -49,6 +49,7 @@ export class CalendarComponent implements OnInit {
         const pricing = await this.http.get<any>(`http://localhost:3000/pricing/id/${providerPricing.pricingId}`,
           {headers: this.headers1}).toPromise();
         const eventTitle = pricing.name + '\n'
+                      + 'Commande #' + booking.id + '\n'
                       + 'Client : ' + user.firstName + ' ' + user.lastName + '\n'
                       + 'Adresse : ' + user.address + ', ' + user.zipcode + ' ' + user.city;
         const googleUrl = 'https://www.google.com/maps/dir/?api=1&origin=Chez%20moi&origin_place_id=' + provider.place_id +

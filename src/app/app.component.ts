@@ -23,6 +23,8 @@ export class AppComponent {
   showProf = false;
   showAppoint = false;
   showUpdPricing = false;
+  showAdminBooking = false;
+  showAdminUser = false;
   image: any;
   pageReloaded: any;
   @ViewChild('tabGroup') tabGroup: MatTabGroup | undefined;
@@ -32,6 +34,7 @@ export class AppComponent {
   private userRole: string | null;
   showProviderAppoint = false;
   constructor(private http: HttpClient, public dialog: MatDialog, private sanitizer: DomSanitizer) {
+    console.log(sessionStorage);
     this.image = sessionStorage.getItem('image');
     this.userRole = sessionStorage.getItem('userRole');
   }
@@ -134,6 +137,9 @@ export class AppComponent {
     this.showProf = false;
     this.showAppoint = false;
     this.showProviderAppoint = false;
+    this.showProvInfo = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.isLogged = false;
     this.isAdmin = false;
     this.isProvider = false;
@@ -150,6 +156,8 @@ export class AppComponent {
     this.showAppoint = false;
     this.showProviderAppoint = false;
     this.showProvInfo = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.selectInformationTab();
   }
 
@@ -159,6 +167,8 @@ export class AppComponent {
     this.showAppoint = false;
     this.showProviderAppoint = false;
     this.showProvInfo = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.selectInformationTab();
   }
 
@@ -169,6 +179,8 @@ export class AppComponent {
     this.showAppoint = false;
     this.showProviderAppoint = false;
     this.showUpdPricing = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.selectInformationTab();
   }
 
@@ -179,6 +191,8 @@ export class AppComponent {
     this.showProviderAppoint = false;
     this.showProvInfo = false;
     this.showUpdPricing = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.selectInformationTab();
   }
   showProviderAppointment(): void {
@@ -188,11 +202,39 @@ export class AppComponent {
     this.showAppoint = false;
     this.showProvInfo = false;
     this.showUpdPricing = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
     this.selectInformationTab();
   }
 
   showUpdatePricings(): void {
     this.showUpdPricing = true;
+    this.showProviderAppoint = false;
+    this.showProf = false;
+    this.showPlanning = false;
+    this.showAppoint = false;
+    this.showProvInfo = false;
+    this.showAdminBooking = false;
+    this.showAdminUser = false;
+    this.selectInformationTab();
+  }
+
+  showAdminBookings(): void {
+    this.showAdminBooking = true;
+    this.showUpdPricing = false;
+    this.showProviderAppoint = false;
+    this.showProf = false;
+    this.showPlanning = false;
+    this.showAppoint = false;
+    this.showProvInfo = false;
+    this.showAdminUser = false;
+    this.selectInformationTab();
+  }
+
+  showAdminUsers(): void {
+    this.showAdminUser = true;
+    this.showAdminBooking = false;
+    this.showUpdPricing = false;
     this.showProviderAppoint = false;
     this.showProf = false;
     this.showPlanning = false;

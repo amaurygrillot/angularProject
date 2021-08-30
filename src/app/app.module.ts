@@ -46,6 +46,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import {AdminBookingsComponent} from './composants/profile/adminBookings/adminBookings.component';
+import {AdminUsersComponent} from './composants/profile/adminUsers/adminUsers.component';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,
@@ -77,7 +79,9 @@ export const MY_DATE_FORMATS = {
     ProviderBookingsComponent,
     UpdateBookingComponent,
     UpdatePricingsComponent,
-    CalendarComponent
+    CalendarComponent,
+    AdminBookingsComponent,
+    AdminUsersComponent
   ],
   imports: [
     BrowserModule,

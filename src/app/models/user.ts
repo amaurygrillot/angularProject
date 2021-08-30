@@ -12,9 +12,10 @@ export class User{
   phoneNumber: string;
   placeId: string;
     providerId: string | undefined;
+    id: string | undefined;
     constructor(firstName: string, lastName: string, mail: string, login: string,
                 image: string, birthdate: string, address: string,
-                zipcode: string, city: string, province: string, phoneNumber: string, placeId: string, providerId?: string) {
+                zipcode: string, city: string, province: string, phoneNumber: string, placeId: string, providerId?: string, id ?: string) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.mail = mail;
@@ -28,6 +29,7 @@ export class User{
         this.phoneNumber = phoneNumber;
         this.placeId = placeId;
         this.providerId = providerId;
+        this.id = id;
       }
 
 }
