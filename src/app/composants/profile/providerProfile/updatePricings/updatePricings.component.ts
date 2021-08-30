@@ -72,6 +72,12 @@ export class UpdatePricingsComponent implements OnInit {
       for (const value of this.provider.pricing) {
         if (value.pricingId === pricing.id)
         {
+          if (!this.pricingChecks.get(pricing.id || ''))
+          {
+            await this.http.delete(`http://localhost:3000/pricing/provider/${value.id}`,
+              {headers : this.headers1}).toPromise();
+            return;
+          }
           await this.http.put(`http://localhost:3000/pricing/provider/${this.provider.id}`,
             this.allProviderPricings?.get(pricing.id || ''),
             {headers : this.headers1}).toPromise();
