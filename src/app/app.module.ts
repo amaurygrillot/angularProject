@@ -41,6 +41,17 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {UpdatePricingsComponent} from './composants/profile/providerProfile/updatePricings/updatePricings.component';
+import {CalendarComponent} from './composants/profile/calendar/calendar.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+
+FullCalendarModule.registerPlugins([ // register FullCalendar plugins
+  dayGridPlugin,
+  interactionPlugin,
+  timeGridPlugin
+]);
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'MM/DD/YYYY',
@@ -65,7 +76,8 @@ export const MY_DATE_FORMATS = {
     UserBookingsComponent,
     ProviderBookingsComponent,
     UpdateBookingComponent,
-    UpdatePricingsComponent
+    UpdatePricingsComponent,
+    CalendarComponent
   ],
   imports: [
     BrowserModule,
@@ -96,7 +108,8 @@ export const MY_DATE_FORMATS = {
     GooglePlaceModule,
     NgxMaterialTimepickerModule.setLocale('fr'),
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    FullCalendarModule
   ],
   providers: [
     {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS}

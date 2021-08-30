@@ -31,6 +31,7 @@
 
         </mat-menu>
       </ng-template>
+      <app-calendar *ngIf="showPlanning"></app-calendar>
       <app-provider-informations *ngIf="showProvInfo"></app-provider-informations>
       <app-update-pricings *ngIf="showUpdPricing"></app-update-pricings>
       <app-profile *ngIf="showProf" profileType = "user"></app-profile>

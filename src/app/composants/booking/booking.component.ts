@@ -224,7 +224,7 @@ export class BookingComponent implements OnInit {
         unitSystem: google.maps.UnitSystem.METRIC
       };
       const route = await this.directionObject.route(directionRequest);
-      console.log(route.routes[0].legs[0].distance);
+      console.log(route);
       if (bookings1.length > 0
         || bookings2.length > 0
         || route.routes[0].legs[0].distance === undefined
