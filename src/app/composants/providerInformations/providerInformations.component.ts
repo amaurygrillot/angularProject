@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {User} from '../../models/user';
 import {Diploma} from '../../models/diploma.model';
@@ -9,41 +9,13 @@ import {Pricing} from '../../models/pricing.model';
 import {ProviderPricing} from '../../models/providerPricing.model';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {UpdatePricingsComponent} from '../profile/providerProfile/updatePricings/updatePricings.component';
-
-function checkBirthday(c: AbstractControl): { [key: string]: boolean } | null {
-  const date = formatDate( Date.now(), 'yyyy', 'en');
-  const dateControl = c.get('birthday');
-  const value = dateControl?.value;
-  const newDate = value.split('-');
-  const YearValue = newDate[0];
-  const Datenow = Number(date);
-  const DateUser = Number(YearValue);
-
-  if ((Datenow - DateUser) > 18){
-        return null;
-      }
-  return { match: true };
-
-  }
-function checkDate(c: AbstractControl): { [key: string]: boolean } | null {
-    const dateStartControl = c.get('startYear');
-    const dateEndControl = c.get('endYear');
-    if (dateStartControl?.value < dateEndControl?.value){
-          return null;
-        }
-    if (dateStartControl?.pristine || dateEndControl?.pristine) {
-          return null;
-        }
-    return { match: true };
-
-    }
 @Component({
   selector: 'app-provider-informations',
   templateUrl: './providerInformations.component.html',
   styleUrls: ['./providerInformations.component.css']
 })
 export class ProviderInformationsComponent implements OnInit {
-
+  updateForm!: FormGroup;
   user = {
     firstName : '',
     lastName: '',
@@ -51,6 +23,7 @@ export class ProviderInformationsComponent implements OnInit {
     image: '',
   };
   provider = {
+    id: '',
     userId: '',
     description: '',
     diploma: [] as Diploma[],
@@ -66,8 +39,13 @@ export class ProviderInformationsComponent implements OnInit {
     .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
     .set('Content-Type', 'application/json');
   isVerified = false;
+  fileToUpload: File | null = null;
 
   constructor(private http: HttpClient, public dialog: MatDialog) {
+    this.updateForm = new FormGroup(
+      {
+        image: new FormControl('', [Validators.required])
+      });
    }
 
   ngOnInit(): void {
@@ -84,6 +62,7 @@ export class ProviderInformationsComponent implements OnInit {
       { headers : this.headers1}).toPromise();
     const provider = await this.http.get<any>(`http://localhost:3000/provider/userId/${session.userId}`,
       { headers : this.headers1}).toPromise();
+    this.provider.id = provider.id;
     this.provider.description = provider.description;
     this.isVerified = provider.verified;
     for (const diploma of provider.diploma) {
@@ -118,20 +97,26 @@ export class ProviderInformationsComponent implements OnInit {
       this.pricings.push(newPricing);
     }
   }
-  validateDiploma(): void {
-    this.headers1 = new HttpHeaders()
-      .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
-      .set('Content-Type', 'application/json');
-    this.http.post(`http://localhost:3000/provider/verify/${this.provider.userId}`, {},
-      {headers: this.headers1})
-      .subscribe( (result: any) => {
-
-      });
-  }
-
   public findPricing(id: string): Pricing | undefined
   {
     return this.pricings.find(pricing => pricing.id === id);
+  }
+
+  handleFileInput(event: Event): void {
+    const element = event.currentTarget as HTMLInputElement;
+    const fileList: FileList | null = element.files;
+    this.fileToUpload = fileList?.item(0) || null;
+    if (this.fileToUpload)
+    {
+      const formData: FormData = new FormData();
+      formData.append('fileKey', this.fileToUpload, `${this.provider.id}.jpg`);
+      console.log(formData);
+      this.http.post(`http://localhost:3000/diploma/file`, formData)
+        .subscribe((result: any) => {
+          // @ts-ignore
+          this.provider.diploma[0].fileImage = this.fileToUpload;
+        });
+    }
   }
 
   updateDescription() {

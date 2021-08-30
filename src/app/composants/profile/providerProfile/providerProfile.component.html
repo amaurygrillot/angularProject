@@ -2,70 +2,63 @@
   <mat-card-title>
     {{user.firstName}} {{user.lastName}} <img [src]="image" style="width: 40px; height: 40px; border-radius: 100%">
   </mat-card-title>
-    <mat-card-content>
-      <mat-list multiple = "false">
-        <div mat-subheader>Prénom</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          {{user.firstName}}
-        </mat-list-item>
-        <div mat-subheader>Nom</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          {{user.lastName}}
-        </mat-list-item>
-        <div mat-subheader>Mail</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          {{user.mail}}
-        </mat-list-item>
-        <div mat-subheader>Pseudo</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          {{provider.description}}
-        </mat-list-item>
-        <div mat-subheader>Mot de passe</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+  <mat-card-content>
+    <mat-selection-list multiple = "false">
+      <div mat-subheader>Description</div>
+      <mat-list-option [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">{{provider.description}}</mat-list-option>
+      <hr>
+      <div mat-subheader>
+        Types de prestations proposées
+      </div>
+      <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+        <mat-list>
 
-        </mat-list-item>
-        <div mat-subheader>Tarifs</div>
-        <mat-list-item [style]="pricingHeight" [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          <mat-list>
           <mat-list-item *ngFor="let providerPricing of provider.pricing">
             <mat-list-item>
               {{findPricing(providerPricing.pricingId || "")?.name}}
             </mat-list-item>
-            Tarif horaire : {{providerPricing.hourlyPrice}}
-            Durée minimum de la prestation : {{providerPricing.minimumTime}}
-            Durée maximum de la prestation : {{providerPricing.maximumTime}}
+            <mat-list-item>
+              {{providerPricing.hourlyPrice}}€/h
+            </mat-list-item>
+            <mat-list-item>
+              {{providerPricing.minimumTime}}mn à {{providerPricing.maximumTime}}mn
+            </mat-list-item>
+
           </mat-list-item>
-          </mat-list>
+        </mat-list>
+      </mat-list-item>
+      <hr style="margin-top: 40px;">
+      <div mat-subheader>Diplomes</div>
+      <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox" style = "margin-top: 100px; margin-bottom: 100px;">
+        <mat-list>
+          <mat-list-item *ngFor="let diploma of provider.diploma">
+            Diplome #{{diploma.id}}
+            <img [src]="diploma.fileImage" style="width: 400px; height: 300px;">
+          </mat-list-item>
+        </mat-list>
+      </mat-list-item>
+      <hr>
+      <div mat-subheader>Expérience</div>
+      <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+        <mat-list>
+          <mat-list-item *ngFor="let experience of provider.experience">
+            {{experience.title}}
+            <br>
+            {{experience.description}}
+            <br>
+            {{experience.startYear}} {{experience.endYear}}
+            <br>
 
-        </mat-list-item>
-        <div mat-subheader>Diplomes</div>
-        <mat-list-item [style]="diplomaHeight" [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          <mat-list>
-            <mat-list-item *ngFor="let diploma of provider.diploma">
-              {{diploma.filename}}
-            </mat-list-item>
-            <button mat-flat-button color="primary" *ngIf="isAdmin" (click)="validateDiploma()">Valider les diplomes</button>
-            <mat-list-item *ngIf="isVerified">
-            <mat-checkbox class="example-margin"
-                          [checked]="isVerified">
-              Diplomes vérifiés
-            </mat-checkbox>
-            </mat-list-item>
-          </mat-list>
+          </mat-list-item>
+        </mat-list>
 
-        </mat-list-item>
-        <div mat-subheader>Expérience</div>
-        <mat-list-item [style]="experienceHeight" [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
-          <mat-list>
-            <mat-list-item *ngFor="let experience of provider.experience">
-              {{experience.title}}
-            </mat-list-item>
-          </mat-list>
-
-        </mat-list-item>
-      </mat-list>
+      </mat-list-item>
 
 
-    </mat-card-content>
+
+    </mat-selection-list>
+    <button mat-flat-button color="primary" *ngIf="isAdmin" (click)="validateDiploma()">Valider le prestataire</button>
+
+  </mat-card-content>
   </mat-card>
 

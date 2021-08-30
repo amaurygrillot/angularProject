@@ -62,8 +62,19 @@ export class ProviderProfileComponent implements OnInit {
     this.provider.description = provider.description;
     this.isVerified = provider.verified;
     for (const diploma of provider.diploma) {
-      const newDiploma = new Diploma(diploma.id, diploma.providerId, diploma.filename);
-      this.provider.diploma.push(newDiploma);
+      this.http.get(`http://localhost:3000/diploma/file/${diploma.filename}`, {headers: this.headers1, responseType: 'arraybuffer'})
+        .subscribe( (result: any) => {
+          let binary = '';
+          const bytes = new Uint8Array( result );
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode( bytes[ i ] );
+          }
+          const diplomaImage = 'data:image/jpeg;base64,' + btoa(binary);
+          const newDiploma = new Diploma(diploma.id, diploma.providerId, diploma.filename, diplomaImage);
+          this.provider.diploma.push(newDiploma);
+        });
+
     }
     for (const experience of provider.experience) {
       const newExperience = new Experience(experience.id, experience.providerId,
@@ -104,6 +115,7 @@ export class ProviderProfileComponent implements OnInit {
     this.headers1 = new HttpHeaders()
       .set('Authorization', `Bearer ${sessionStorage.getItem('token')}`)
       .set('Content-Type', 'application/json');
+    console.log(this.injectedData);
     this.http.post(`http://localhost:3000/provider/verify/${this.injectedData.providerId}`, {},
       {headers: this.headers1})
       .subscribe( (result: any) => {

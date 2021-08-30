@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card style="max-height: 100%; max-width: 90%">
   <mat-card-title>Mes informations professionnelles</mat-card-title>
   <mat-card-content>
     <mat-selection-list multiple = "false">
@@ -28,12 +28,19 @@
       </mat-list-item>
 <hr style="margin-top: 40px;">
         <div mat-subheader>Diplomes</div>
-        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox">
+        <mat-list-item [matTooltip]="toolTipMessage" matTooltipPosition="after" role="textbox" style = "margin-top: 100px; margin-bottom: 100px;">
           <mat-list>
             <mat-list-item *ngFor="let diploma of provider.diploma">
               Diplome #{{diploma.id}}
-              <img [src]="diploma.fileImage">
+              <img [src]="diploma.fileImage" style="width: 400px; height: 300px;">
             </mat-list-item>
+            <form name="updateForm" [formGroup]="updateForm">
+            <mat-label for="file">Choisir un fichier</mat-label>
+            <input type="file"
+                   id="file"
+                   accept="image/jpeg"
+                   (change)="handleFileInput($event)">
+            </form>
           </mat-list>
         </mat-list-item>
 <hr>
